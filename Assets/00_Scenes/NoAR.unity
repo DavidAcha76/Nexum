@@ -133,13 +133,14 @@ GameObject:
   - component: {fileID: 45323361}
   - component: {fileID: 45323360}
   - component: {fileID: 45323359}
+  - component: {fileID: 45323362}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!81 &45323359
 AudioListener:
   m_ObjectHideFlags: 0
@@ -214,6 +215,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &45323362
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 45323358}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PreferredRunner: 0
+  Components:
+  - {fileID: 45323359}
+  _guid: c3f254a4-7150-40df-
 --- !u!1 &122449352
 GameObject:
   m_ObjectHideFlags: 0
@@ -224,6 +241,7 @@ GameObject:
   m_Component:
   - component: {fileID: 122449354}
   - component: {fileID: 122449353}
+  - component: {fileID: 122449355}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -308,6 +326,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &122449355
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 122449352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d73b0a95be81246699cf0d9ecdc01863, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PreferredRunner: 0
+  Components:
+  - {fileID: 122449353}
+  _guid: 4b7f7dc9-a16d-44d6-
 --- !u!1 &2092134999
 GameObject:
   m_ObjectHideFlags: 0
@@ -318,6 +352,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2092135001}
   - component: {fileID: 2092135000}
+  - component: {fileID: 2092135003}
+  - component: {fileID: 2092135002}
   m_Layer: 0
   m_Name: DungeonMaster
   m_TagString: Untagged
@@ -332,7 +368,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2092134999}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df4fa1aa202a5a043a49e53fdf2bbe70, type: 3}
   m_Name: 
@@ -381,6 +417,65 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2092135002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092134999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3649976703
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 2092135003}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &2092135003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092134999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9ad8e1a889c08c94cbd291879843c5c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorPrefab: {fileID: 1774565267533234777, guid: a8ca5d5f58996244b8ce7f0e3be2b9f1, type: 3}
+  wallPrefab: {fileID: 7288274789959621777, guid: ae59cdf2e3b16eb4ab35de513ce09740, type: 3}
+  exitPrefab: {fileID: 7691538546112179865, guid: 180470023ac9b3e448b0b04ccfa72fa9, type: 3}
+  enemyPrefabs:
+  - {fileID: 0}
+  totalEnemies: 8
+  enemySpawnJitter: 0
+  trapFloorPrefab: {fileID: 1774565267533234777, guid: 96bb61f2ef4ee68488639b82cf2782b2, type: 3}
+  trapProbability: 0.08
+  trapSafeRadius: 2
+  width: 35
+  height: 35
+  cellSize: 0.1
+  maxRoomAttempts: 60
+  maxRooms: 8
+  roomMinW: 1
+  roomMinH: 1
+  roomMaxW: 2
+  roomMaxH: 2
+  mazeRoomRatio: 0.5
+  mazeGridStep: 2
+  useFixedSeed: 0
+  seed: 12345
+  floorMask:
+    serializedVersion: 2
+    m_Bits: 0
+  spawnRayHeight: 50
+  spawnYOffset: 0.1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

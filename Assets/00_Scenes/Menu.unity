@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 123115329}
   - component: {fileID: 123115328}
   m_Layer: 5
-  m_Name: Button
+  m_Name: Summon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -185,9 +185,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1113451987}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
-        m_MethodName: Roll
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 300109229}
   - component: {fileID: 300109228}
   m_Layer: 5
-  m_Name: Button (3)
+  m_Name: Selector
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,19 +337,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 300109229}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1113451987}
-        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
-        m_MethodName: Roll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &300109229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -522,6 +510,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 367861193}
   m_CullTransparentMesh: 1
+--- !u!1 &388042386
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 388042388}
+  - component: {fileID: 388042387}
+  m_Layer: 0
+  m_Name: LobbyManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &388042387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388042386}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10acbb78729b6ce478eb7f36dad1717d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  launcher: {fileID: 963940870}
+  mainCanvas: {fileID: 1738777038}
+  hostButton: {fileID: 1226657573}
+  joinButton: {fileID: 1063687609}
+  quickJoinButton: {fileID: 1448564196}
+  defaultRoomName: Room-01
+--- !u!4 &388042388
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 388042386}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 314, y: 176.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &578558790
 GameObject:
   m_ObjectHideFlags: 0
@@ -916,6 +954,53 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &963940869
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 963940871}
+  - component: {fileID: 963940870}
+  m_Layer: 0
+  m_Name: NetworkSystems
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &963940870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963940869}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e58383bf5eb440e4eb5db70647ef6dc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 7094235857130408095, guid: 3f35f6ceded95b44496180addd39eab2, type: 3}
+  gameplaySceneBuildIndex: 0
+  maxPlayers: 4
+--- !u!4 &963940871
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963940869}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 314, y: 176.6, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1034006210
 GameObject:
   m_ObjectHideFlags: 0
@@ -1063,7 +1148,7 @@ GameObject:
   - component: {fileID: 1063687610}
   - component: {fileID: 1063687609}
   m_Layer: 5
-  m_Name: Button (4)
+  m_Name: Join
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1132,19 +1217,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1063687610}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1113451987}
-        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
-        m_MethodName: Roll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1063687610
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1183,7 +1256,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1063687607}
   m_CullTransparentMesh: 1
---- !u!1 &1113451986
+--- !u!1 &1131147045
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1191,23 +1264,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1113451988}
-  - component: {fileID: 1113451987}
-  - component: {fileID: 1113451989}
+  - component: {fileID: 1131147047}
+  - component: {fileID: 1131147046}
+  - component: {fileID: 1131147048}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Gacha
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1113451987
+--- !u!114 &1131147046
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1113451986}
+  m_GameObject: {fileID: 1131147045}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a6c12945dae93dc4c950fabafdf5b181, type: 3}
@@ -1223,33 +1296,36 @@ MonoBehaviour:
   rollButton: {fileID: 123115328}
   goldText: {fileID: 1366912833}
   infoText: {fileID: 0}
---- !u!4 &1113451988
+--- !u!4 &1131147047
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1113451986}
+  m_GameObject: {fileID: 1131147045}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 321, y: 180.5, z: 0}
+  m_LocalPosition: {x: 537, y: 218.20001, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1113451989
+--- !u!114 &1131147048
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1113451986}
-  m_Enabled: 0
+  m_GameObject: {fileID: 1131147045}
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f02e37d789969348926b1bf1fea0cf2, type: 3}
+  m_Script: {fileID: 11500000, guid: ca44492a78fff334c9191951c8c45c56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chooseButton: {fileID: 300109228}
+  characterImage: {fileID: 1367523547}
+  infoText: {fileID: 0}
 --- !u!1 &1226657571
 GameObject:
   m_ObjectHideFlags: 0
@@ -1263,7 +1339,7 @@ GameObject:
   - component: {fileID: 1226657574}
   - component: {fileID: 1226657573}
   m_Layer: 5
-  m_Name: Button (5)
+  m_Name: Host
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1332,19 +1408,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1226657574}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1113451987}
-        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
-        m_MethodName: Roll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1226657574
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1941,7 +2005,7 @@ GameObject:
   - component: {fileID: 1448564197}
   - component: {fileID: 1448564196}
   m_Layer: 5
-  m_Name: Button (1)
+  m_Name: Quick
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2010,19 +2074,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1448564197}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1113451987}
-        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
-        m_MethodName: Roll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1448564197
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2319,7 +2371,7 @@ GameObject:
   - component: {fileID: 1910256016}
   - component: {fileID: 1910256015}
   m_Layer: 5
-  m_Name: Button (2)
+  m_Name: Offline
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2388,19 +2440,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1910256016}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1113451987}
-        m_TargetAssemblyTypeName: GachaSystem, Assembly-CSharp
-        m_MethodName: Roll
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1910256016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2541,4 +2581,6 @@ SceneRoots:
   - {fileID: 2050423535}
   - {fileID: 1738777035}
   - {fileID: 1253959221}
-  - {fileID: 1113451988}
+  - {fileID: 1131147047}
+  - {fileID: 963940871}
+  - {fileID: 388042388}
