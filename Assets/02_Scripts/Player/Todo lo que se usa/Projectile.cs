@@ -37,7 +37,13 @@ public class Projectile : MonoBehaviour
         if (enemy != null)
         {
             enemy.TakeDamage(damage);
-            Debug.Log($"[Projectile] Impactó a {other.name} → daño {damage}, HP restante: {enemy.currentHealth}");
+            if (enemy.currentHealth <= 0)
+            {
+                PlayerController player = FindObjectOfType<PlayerController>();
+                if (player != null)
+                    player.AddKill();
+
+            }
             Destroy(gameObject);
             return;
         }

@@ -4,33 +4,39 @@ using UnityEngine;
 public class PlayerShooter : MonoBehaviour
 {
     [Header("Config")]
-    public string enemyTag = "Enemy";   // 👉 tag de los enemigos
-    public float shootRange = 8f;       // rango de detección
-    public float autoShootDelay = 0.8f; // segundos entre disparos automáticos
+    public string enemyTag = "Enemy";
+    public float shootRange = 8f;
+    public float autoShootDelay = 0.8f;
 
     [Header("Refs")]
     public Transform firePoint;
     public GameObject bulletPrefab;
     public PlayerController player;
 
+    private Animator animator;
     private float shootTimer;
+
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+    }
 
     void Update()
     {
         if (player == null) return;
 
+        // 🚫 No disparar si está en ultimate
+        if (player.IsUsingUltimate) return;
+
         shootTimer -= Time.deltaTime;
 
-        // 🔹 Verifica si el player está en movimiento con el joystick principal
         Vector2 moveInput = player.moveJoystick ? player.moveJoystick.Direction : Vector2.zero;
         bool isMoving = moveInput.sqrMagnitude > 0.01f;
         if (isMoving) return;
 
-        // 🔹 Buscar enemigo más cercano en rango
         GameObject target = FindClosestEnemy();
         if (target == null) return;
 
-        // 🔹 Apuntar hacia el enemigo
         Vector3 dir = (target.transform.position - firePoint.position);
         dir.y = 0f;
         if (dir.sqrMagnitude > 0.01f)
@@ -40,13 +46,13 @@ public class PlayerShooter : MonoBehaviour
             transform.rotation = lookRot;
         }
 
-        // 🔹 Disparar automáticamente
         if (shootTimer <= 0f)
         {
             Shoot();
             shootTimer = player.AttackSpeed > 0 ? 1f / player.AttackSpeed : autoShootDelay;
         }
     }
+
 
     GameObject FindClosestEnemy()
     {
@@ -72,6 +78,10 @@ public class PlayerShooter : MonoBehaviour
         if (bulletPrefab == null || firePoint == null) return;
 
         Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+
+        if (animator != null)
+            animator.SetTrigger("Shoot"); // 🔹 dispara animación
+
         Debug.Log("[AutoShoot] Disparo automático hacia enemigo");
     }
 }
