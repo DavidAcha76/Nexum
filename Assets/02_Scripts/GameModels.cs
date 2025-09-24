@@ -18,8 +18,10 @@ public class Character
 public class OwnedCharacter
 {
     [PrimaryKey, AutoIncrement]
-    public int Id { get; set; }
+    public int Id { get; set; }          // Id del registro en la tabla
+    public int CharacterId { get; set; } // Id del Character base
     public string Name { get; set; }
     public int Rarity { get; set; }
-    public int Count { get; set; }   // cuántas copias posee el jugador
+    public int Count { get; set; }
 }
+
