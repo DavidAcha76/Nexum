@@ -222,6 +222,11 @@ MonoBehaviour:
   multiShot: 1
   moveJoystick: {fileID: 0}
   firePoint: {fileID: 3569402036447939153}
+  ultimateCharge: 0
+  chargePerKill: 20
+  ultimateDuration: 3
+  sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
+  firePointUltimate: {fileID: 3569402036447939153}
 --- !u!114 &1137396183962933022
 MonoBehaviour:
   m_ObjectHideFlags: 0

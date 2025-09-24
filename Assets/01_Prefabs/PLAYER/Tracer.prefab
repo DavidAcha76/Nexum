@@ -112,7 +112,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 788944d7754249148a8bce5310dc0797, type: 3}
       propertyPath: m_Name
-      value: Chibi_Adventurer_trac_0924041925_texture@Shooting
+      value: Tracer
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 788944d7754249148a8bce5310dc0797, type: 3}
       propertyPath: m_TagString
@@ -269,6 +269,11 @@ MonoBehaviour:
   multiShot: 1
   moveJoystick: {fileID: 0}
   firePoint: {fileID: 8443008313598740487}
+  ultimateCharge: 0
+  chargePerKill: 20
+  ultimateDuration: 3
+  sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
+  firePointUltimate: {fileID: 8443008313598740487}
 --- !u!4 &654633075826725107 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 788944d7754249148a8bce5310dc0797, type: 3}
