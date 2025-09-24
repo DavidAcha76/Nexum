@@ -308,9 +308,83 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &2092134999
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2092135001}
+  - component: {fileID: 2092135000}
+  m_Layer: 0
+  m_Name: DungeonMaster
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2092135000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092134999}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4fa1aa202a5a043a49e53fdf2bbe70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorPrefab: {fileID: 1774565267533234777, guid: a8ca5d5f58996244b8ce7f0e3be2b9f1, type: 3}
+  wallPrefab: {fileID: 7288274789959621777, guid: ae59cdf2e3b16eb4ab35de513ce09740, type: 3}
+  playerPrefab: {fileID: 4968312576368718730, guid: 3f35f6ceded95b44496180addd39eab2, type: 3}
+  exitPrefab: {fileID: 7691538546112179865, guid: 180470023ac9b3e448b0b04ccfa72fa9, type: 3}
+  enemyPrefabs:
+  - {fileID: 6104368539207582124, guid: 5cd6d81417584744c869588153f3a10d, type: 3}
+  totalEnemies: 6
+  enemySpawnJitter: 0
+  trapFloorPrefab: {fileID: 1774565267533234777, guid: 96bb61f2ef4ee68488639b82cf2782b2, type: 3}
+  trapProbability: 0.14
+  trapSafeRadius: 1
+  width: 35
+  height: 35
+  cellSize: 0.1
+  maxRoomAttempts: 60
+  maxRooms: 12
+  roomMinW: 1
+  roomMinH: 1
+  roomMaxW: 2
+  roomMaxH: 2
+  mazeRoomRatio: 0.52
+  mazeGridStep: 2
+  useFixedSeed: 0
+  seed: 12345
+  floorMask:
+    serializedVersion: 2
+    m_Bits: 0
+  spawnRayHeight: 50
+  spawnYOffset: 0.1
+--- !u!4 &2092135001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2092134999}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 45323361}
   - {fileID: 122449354}
+  - {fileID: 2092135001}

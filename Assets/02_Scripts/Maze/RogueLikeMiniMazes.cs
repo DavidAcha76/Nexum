@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// RogueLikeMiniMazes — Simple & Efficient (con inicio/salida seguros + spawns de enemigos)
+/// RogueLikeMiniMazes — Simple & Efficient (con inicio/salida seguros + spawns de enemigos + trampas)
 /// - Salas roguelike + pasillos en L + mini-laberintos internos.
-/// - Extremos opuestos robustos (dos BFS) y empuje 1 paso hacia adentro si caen en borde.
-/// - Snap al piso con raycast para evitar que el player caiga al vacío.
-/// - Random cada ejecución (useFixedSeed = false).
-/// - Spawns de enemigos en celdas caminables, lejos de inicio/salida.
+/// - Extremos opuestos (2 BFS) + empuje 1 paso si caen en borde.
+/// - Snap al piso con raycast (máscara int compatible C# 8.0).
+/// - Spawns de enemigos en celdas caminables.
+/// - Trampas: algunas celdas de piso se reemplazan por trapFloorPrefab (idéntico al piso),
+///   no se distinguen hasta que el player pisa la celda; allí ejecutan el efecto.
 /// </summary>
 public class RogueLikeMiniMazes : MonoBehaviour
 {
@@ -25,12 +26,16 @@ public class RogueLikeMiniMazes : MonoBehaviour
     public GameObject[] enemyPrefabs;
     [Tooltip("Cantidad total de enemigos a instanciar")]
     public int totalEnemies = 8;
-    [Tooltip("Distancia mínima (en celdas) respecto al inicio")]
-    public int minGridDistFromStart = 6;
-    [Tooltip("Distancia mínima (en celdas) respecto a la salida")]
-    public int minGridDistFromExit = 4;
     [Tooltip("Jitter horizontal dentro de la celda (unidades mundo). 0 = centro exacto")]
-    public float enemySpawnJitter = 0.4f;
+    public float enemySpawnJitter = 0f;
+
+    [Header("Trampas")]
+    [Tooltip("Prefab de trampa (idéntico visual al piso)")]
+    public GameObject trapFloorPrefab;
+    [Tooltip("Probabilidad de que una celda caminable sea trampa (0..1)")]
+    [Range(0f, 1f)] public float trapProbability = 0.08f;
+    [Tooltip("No colocar trampas en estas celdas alrededor del inicio/salida (radio Manhattan)")]
+    [Min(0)] public int trapSafeRadius = 2;
 
     [Header("Grid Settings")]
     public int width = 80;
@@ -76,6 +81,12 @@ public class RogueLikeMiniMazes : MonoBehaviour
     // Cache de celdas caminables para spawns
     private List<Vector2Int> walkableCache = new List<Vector2Int>();
 
+    // Referencia a pisos por celda para poder reemplazar por trampas
+    private GameObject[,] floorRefs;
+
+    // Celdas marcadas como trampa (para fácil consulta)
+    private bool[,] isTrap;
+
     // Gizmo de debug de spawns enemigos
     private readonly List<Vector3> enemySpawnWorld = new List<Vector3>();
 
@@ -84,9 +95,10 @@ public class RogueLikeMiniMazes : MonoBehaviour
         InitRandom();
         ClampInputs();
         Generate();
-        BuildVisuals();
-        PickEndpointsAndSpawn();   // player + portal
-        SpawnEnemies();            // enemigos
+        BuildVisuals();           // crea walls y pisos base
+        PickEndpointsAndSpawn();  // player + portal
+        PlaceTraps();             // reemplaza ciertos pisos por trampas
+        SpawnEnemies();           // enemigos
     }
 
     #region Setup
@@ -108,8 +120,8 @@ public class RogueLikeMiniMazes : MonoBehaviour
         mazeGridStep = Mathf.Max(2, mazeGridStep);
         maxRooms = Mathf.Max(1, maxRooms);
         maxRoomAttempts = Mathf.Max(maxRoomAttempts, maxRooms);
-        minGridDistFromStart = Mathf.Max(0, minGridDistFromStart);
-        minGridDistFromExit = Mathf.Max(0, minGridDistFromExit);
+        trapSafeRadius = Mathf.Max(0, trapSafeRadius);
+        trapProbability = Mathf.Clamp01(trapProbability);
     }
     #endregion
 
@@ -117,6 +129,8 @@ public class RogueLikeMiniMazes : MonoBehaviour
     void Generate()
     {
         walk = new bool[width, height];
+        isTrap = new bool[width, height];
+        floorRefs = new GameObject[width, height];
         rooms.Clear();
 
         PlaceRooms();
@@ -219,11 +233,12 @@ public class RogueLikeMiniMazes : MonoBehaviour
 
         float half = cellSize * 0.5f;
 
-        // Pisos
+        // Pisos (guardamos referencia por celda para poder reemplazar por trampas)
         ForEachCell((x, y) =>
         {
             if (!walk[x, y]) return;
-            Instantiate(floorPrefab, GridToWorld(x, y), Quaternion.identity, transform);
+            var f = Instantiate(floorPrefab, GridToWorld(x, y), Quaternion.identity, transform);
+            floorRefs[x, y] = f;
         });
 
         // Muros (contorno de celdas caminables)
@@ -244,7 +259,7 @@ public class RogueLikeMiniMazes : MonoBehaviour
     }
     #endregion
 
-    #region Extremos y Spawns (robustos)
+    #region Extremos + Trampas + Enemigos
     void PickEndpointsAndSpawn()
     {
         // Cachear celdas caminables
@@ -282,7 +297,49 @@ public class RogueLikeMiniMazes : MonoBehaviour
         Debug.Log($"START: {startPos}  EXIT: {exitPos}");
     }
 
-    // Spawns de enemigos simples y seguros
+    // Marca y coloca trampas reemplazando ciertos pisos por trapFloorPrefab
+    void PlaceTraps()
+    {
+        if (!trapFloorPrefab || trapProbability <= 0f) return;
+
+        foreach (var cell in walkableCache)
+        {
+            // Evitar trampa en inicio/salida y un pequeño radio seguro
+            if (GridDistance(cell, startPos) <= trapSafeRadius) continue;
+            if (GridDistance(cell, exitPos) <= trapSafeRadius) continue;
+
+            if (UnityEngine.Random.value <= trapProbability)
+            {
+                int x = cell.x, y = cell.y;
+                if (!IsWalk(x, y)) continue;
+
+                // Reemplaza el piso por el prefab de trampa
+                var prev = floorRefs[x, y];
+                Vector3 pos = GridToWorld(x, y);
+                Quaternion rot = prev ? prev.transform.rotation : Quaternion.identity;
+                Transform parent = prev ? prev.transform.parent : transform;
+
+                if (prev) Destroy(prev);
+
+                var trap = Instantiate(trapFloorPrefab, pos, rot, parent);
+
+                // Asegura tener un TrapTile (si el prefab no lo tiene, lo añadimos)
+                if (!trap.TryGetComponent<TrapTile>(out var tile))
+                {
+                    tile = trap.AddComponent<TrapTile>();
+                }
+                // Config mínimo opcional del componente (puedes ajustar en el prefab también)
+                tile.consumeOnTrigger = true;      // se desactiva al activarse
+                tile.knockUpForce = 4f;            // efecto por defecto si hay Rigidbody
+                tile.debugLog = false;
+
+                isTrap[x, y] = true;
+                floorRefs[x, y] = trap; // ahora el piso de esa celda es la trampa
+            }
+        }
+    }
+
+    // Spawns de enemigos simples y seguros (dentro del mapa)
     void SpawnEnemies()
     {
         enemySpawnWorld.Clear();
@@ -292,13 +349,11 @@ public class RogueLikeMiniMazes : MonoBehaviour
 
         if (walkableCache == null || walkableCache.Count == 0)
         {
-            // Si no se generó cache por alguna razón, lo llenamos ahora
             walkableCache = new List<Vector2Int>();
             ForEachCell((x, y) => { if (walk[x, y]) walkableCache.Add(new Vector2Int(x, y)); });
             if (walkableCache.Count == 0) return;
         }
 
-        // Aseguramos jitter razonable (no salir del tile)
         float maxJ = Mathf.Clamp(enemySpawnJitter, 0f, cellSize * 0.45f);
 
         int spawned = 0;
@@ -309,27 +364,17 @@ public class RogueLikeMiniMazes : MonoBehaviour
         {
             attempts++;
 
-            // Celda random caminable
             Vector2Int c = walkableCache[rng.Next(walkableCache.Count)];
-
-            // Evitar inicio / salida
             if (c == startPos || c == exitPos) continue;
 
-            // Chequear distancia mínima en grilla respecto a inicio/salida
-            if (GridDistance(c, startPos) < minGridDistFromStart) continue;
-            if (GridDistance(c, exitPos) < minGridDistFromExit) continue;
-
-            // Posición mundo con jitter XY controlado
             Vector3 p = GridToWorld(c.x, c.y);
             float jx = (float)(rng.NextDouble() * 2.0 - 1.0) * maxJ;
             float jz = (float)(rng.NextDouble() * 2.0 - 1.0) * maxJ;
             Vector3 world = SnapToGround(new Vector3(p.x + jx, p.y, p.z + jz));
 
-            // Elegir prefab
             GameObject prefab = enemyPrefabs[rng.Next(enemyPrefabs.Length)];
             if (prefab == null) continue;
 
-            // Instanciar
             Instantiate(prefab, world, Quaternion.identity);
             enemySpawnWorld.Add(world);
             spawned++;
