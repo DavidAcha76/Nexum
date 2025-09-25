@@ -194,6 +194,39 @@ public class NetworkGameLauncher : MonoBehaviour, INetworkRunnerCallbacks
     }
 
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) { }
-    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input)
+    {
+        // Dirección por defecto
+        Vector2 move = Vector2.zero;
+
+        // Joystick de la UI local (solo existe en el cliente local)
+        var js = UnityEngine.Object.FindFirstObjectByType<SimpleJoystick>();
+        if (js != null)
+        {
+            move = js.Direction;                // -1..1
+        }
+        else
+        {
+            // Fallback teclado (útil en editor/PC)
+            move.x = (Input.GetKey(KeyCode.D) ? 1 : 0) + (Input.GetKey(KeyCode.A) ? -1 : 0);
+            move.y = (Input.GetKey(KeyCode.W) ? 1 : 0) + (Input.GetKey(KeyCode.S) ? -1 : 0);
+            if (move.sqrMagnitude > 1f) move.Normalize();
+        }
+
+        // Botones opcionales (si quieres disparar dash/ultimate desde teclado)
+        bool dash = Input.GetKey(KeyCode.LeftShift);
+        bool ult = Input.GetKeyDown(KeyCode.Q);
+
+        var data = new PlayerInputData
+        {
+            move = move,
+            dash = dash,
+            ultimate = ult
+        };
+
+        input.Set(data);
+    }
+
+
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
 }

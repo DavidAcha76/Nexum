@@ -23,7 +23,7 @@ public class PlayerShooter : NetworkBehaviour
 
     void Update()
     {
-        // Evita ejecutar en todos: solo el dueño del input dispara
+        // Dispara solo el dueño del input
         if (!Object.HasInputAuthority) return;
 
         if (player == null) return;
@@ -31,7 +31,8 @@ public class PlayerShooter : NetworkBehaviour
 
         shootTimer -= Time.deltaTime;
 
-        Vector2 moveInput = player.moveJoystick ? player.moveJoystick.Direction : Vector2.zero;
+        // No disparar si se está moviendo (usa MoveInput replicado)
+        Vector2 moveInput = player.MoveInput;
         bool isMoving = moveInput.sqrMagnitude > 0.01f;
         if (isMoving) return;
 
@@ -50,6 +51,7 @@ public class PlayerShooter : NetworkBehaviour
         if (shootTimer <= 0f)
         {
             Shoot();
+            // Usa la AttackSpeed expuesta; si es 0, cae al delay
             shootTimer = player.AttackSpeed > 0 ? 1f / player.AttackSpeed : autoShootDelay;
         }
     }
@@ -72,6 +74,7 @@ public class PlayerShooter : NetworkBehaviour
         }
         return closest;
     }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
     public void RPC_Shoot(Vector3 pos, Quaternion rot)
     {
@@ -82,18 +85,19 @@ public class PlayerShooter : NetworkBehaviour
     {
         if (bulletPrefab == null || firePoint == null) return;
 
+        // Cliente pide spawn al server (a menos que sea GameMode.Shared)
         if (!Runner.IsServer && Runner.GameMode != GameMode.Shared)
         {
-            // Envía un mensaje RPC o notifica al Host para disparar
             RPC_Shoot(firePoint.position, firePoint.rotation);
             return;
         }
 
-        // El Host spawnea la bala
-        Runner.Spawn(bulletPrefab.GetComponent<NetworkObject>(),
-                     firePoint.position,
-                     firePoint.rotation,
-                     Object.InputAuthority);
+        // Host/Server spawnea la bala
+        Runner.Spawn(
+            bulletPrefab.GetComponent<NetworkObject>(),
+            firePoint.position,
+            firePoint.rotation,
+            Object.InputAuthority
+        );
     }
-
 }

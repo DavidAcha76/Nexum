@@ -148,7 +148,7 @@ public class FusionBootstrap : MonoBehaviour, INetworkRunnerCallbacks
                 (Input.GetKey(KeyCode.D) ? 1 : 0) + (Input.GetKey(KeyCode.A) ? -1 : 0),
                 (Input.GetKey(KeyCode.W) ? 1 : 0) + (Input.GetKey(KeyCode.S) ? -1 : 0)
             ),
-            jump = Input.GetKey(KeyCode.Space)
+            //jump = Input.GetKey(KeyCode.Space)
         };
         input.Set(data);
     }

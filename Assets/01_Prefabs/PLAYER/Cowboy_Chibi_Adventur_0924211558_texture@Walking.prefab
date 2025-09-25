@@ -1231,6 +1231,7 @@ GameObject:
   - component: {fileID: 3530877260480569291}
   - component: {fileID: 5241602230030981447}
   - component: {fileID: 5676133983648722780}
+  - component: {fileID: 5235112096717439614}
   m_Layer: 0
   m_Name: Cowboy_Chibi_Adventur_0924211558_texture@Walking
   m_TagString: Untagged
@@ -1327,17 +1328,22 @@ MonoBehaviour:
   staminaRegenPerSecond: 20
   staminaRegenDelay: 0.5
   maxHealth: 100
+  maxShields: 3
   coins: 0
   damage: 10
   attackSpeed: 1
-  multiShot: 1
-  moveJoystick: {fileID: 0}
   firePoint: {fileID: 5853864838157974347}
-  ultimateCharge: 0
-  chargePerKill: 20
-  ultimateDuration: 3
-  sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
   firePointUltimate: {fileID: 5853864838157974347}
+  sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
+  animator: {fileID: 0}
+  ultimateDuration: 3
+  _CurrentHealth: 0
+  _CurrentStamina: 0
+  _CurrentShields: 0
+  _IsDashing: 0
+  _IsUsingUltimate: 0
+  _UltimateCharge: 0
+  _MoveInput: {x: 0, y: 0}
 --- !u!114 &5241602230030981447
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1377,6 +1383,26 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5235112096717439614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6605000259350174264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2743895033
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 3530877260480569291}
+  - {fileID: 5241602230030981447}
+  ForceRemoteRenderTimeframe: 0
 --- !u!1 &6939570341530950773
 GameObject:
   m_ObjectHideFlags: 0

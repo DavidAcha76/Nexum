@@ -112,6 +112,12 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
       insertIndex: -1
+      addedObject: {fileID: -502418819780910637}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1118340462747922613}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 1113556055557746719}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
       insertIndex: -1
@@ -125,15 +131,50 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8198455570637460033}
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: -502418819780910637}
   m_SourcePrefab: {fileID: 100100000, guid: 001fef01c5665064885794f207562a88, type: 3}
 --- !u!1 &3647880978057150640 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 001fef01c5665064885794f207562a88, type: 3}
   m_PrefabInstance: {fileID: 4494180927232900577}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &-502418819780910637
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3647880978057150640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3273877274
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 1118340462747922613}
+  - {fileID: 319017445928513764}
+  - {fileID: 8198455570637460033}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &1118340462747922613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3647880978057150640}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0
 --- !u!95 &1113556055557746719
 Animator:
   serializedVersion: 5
@@ -204,7 +245,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 112
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &319017445928513764
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -248,33 +289,18 @@ MonoBehaviour:
   coins: 0
   damage: 10
   attackSpeed: 1
-  moveJoystick: {fileID: 0}
   firePoint: {fileID: 2709118411987865865}
-  ultimateCharge: 0
-  chargePerKill: 20
-  ultimateDuration: 3
-  sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
   firePointUltimate: {fileID: 2709118411987865865}
---- !u!114 &-502418819780910637
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3647880978057150640}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 3273877274
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 319017445928513764}
-  - {fileID: 8198455570637460033}
-  ForceRemoteRenderTimeframe: 0
+  sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
+  animator: {fileID: 0}
+  ultimateDuration: 3
+  _CurrentHealth: 0
+  _CurrentStamina: 0
+  _CurrentShields: 0
+  _IsDashing: 0
+  _IsUsingUltimate: 0
+  _UltimateCharge: 0
+  _MoveInput: {x: 0, y: 0}
 --- !u!4 &4167009158608984586 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
