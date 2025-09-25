@@ -219,10 +219,10 @@ MonoBehaviour:
   staminaRegenPerSecond: 20
   staminaRegenDelay: 0.5
   maxHealth: 100
+  maxShields: 3
   coins: 0
   damage: 10
   attackSpeed: 1
-  multiShot: 1
   moveJoystick: {fileID: 0}
   firePoint: {fileID: 3569402036447939153}
   ultimateCharge: 0
@@ -264,5 +264,7 @@ MonoBehaviour:
   ObjectInterest: 1
   Flags: 262145
   NestedObjects: []
-  NetworkedBehaviours: []
+  NetworkedBehaviours:
+  - {fileID: 3028347107095851287}
+  - {fileID: 1137396183962933022}
   ForceRemoteRenderTimeframe: 0

@@ -1,8 +1,9 @@
-﻿using System.Collections; // 👉 necesario para IEnumerator
+﻿using Fusion;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody)), RequireComponent(typeof(CapsuleCollider))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     [Header("Movement")]
     [SerializeField] float baseMoveSpeed = 5f;
@@ -29,7 +30,7 @@ public class PlayerController : MonoBehaviour
     private float currentHealth;
 
     [Header("Shields")]
-    [SerializeField] private int maxShields = 3; // máximo acumulable
+    [SerializeField] private int maxShields = 3;
     private int currentShields = 0;
 
     [Header("Upgrades")]
@@ -44,7 +45,7 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     [Header("Ultimate Config")]
-    [SerializeField] float ultimateCharge = 0f; // 0–100
+    [SerializeField] float ultimateCharge = 0f;
     [SerializeField] float chargePerKill = 20f;
     [SerializeField] float ultimateDuration = 3f;
     private bool isUsingUltimate = false;
@@ -55,7 +56,6 @@ public class PlayerController : MonoBehaviour
     public bool CanUseUltimate => ultimateCharge >= 100f;
     public float Ultimate01 => ultimateCharge / 100f;
 
-    // === accesores para UI ===
     public int Coins => coins;
     public float Damage => damage;
     public float AttackSpeed => attackSpeed;
@@ -69,6 +69,9 @@ public class PlayerController : MonoBehaviour
     public float MaxStamina => maxStamina;
     public int CurrentShields => currentShields;
     public int MaxShields => maxShields;
+
+    // Exponer si está en ultimate para otros scripts (como Shooter)
+    public bool IsUsingUltimate => isUsingUltimate;
 
     void Awake()
     {
@@ -93,10 +96,13 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Solo la autoridad de estado simula física y movimiento
+        if (!Object.HasStateAuthority) return;
+
         if (isUsingUltimate)
         {
             rb.velocity = Vector3.zero;
-            animator.SetBool("isWalking", false);
+            if (animator) animator.SetBool("isWalking", false);
             return;
         }
 
@@ -112,12 +118,22 @@ public class PlayerController : MonoBehaviour
 
             if (move.sqrMagnitude > 0.001f)
             {
-                firePoint.rotation = Quaternion.LookRotation(move, Vector3.up);
-                transform.rotation = firePoint.rotation;
+                if (firePoint != null)
+                {
+                    firePoint.rotation = Quaternion.LookRotation(move, Vector3.up);
+                    transform.rotation = firePoint.rotation;
+                }
+                else
+                {
+                    transform.rotation = Quaternion.LookRotation(move, Vector3.up);
+                }
             }
 
-            animator.SetBool("isWalking", move.sqrMagnitude > 0.01f);
-            animator.SetBool("Idle", move.sqrMagnitude <= 0.01f);
+            if (animator)
+            {
+                animator.SetBool("isWalking", move.sqrMagnitude > 0.01f);
+                animator.SetBool("Idle", move.sqrMagnitude <= 0.01f);
+            }
         }
 
         if (isDashing)
@@ -144,6 +160,7 @@ public class PlayerController : MonoBehaviour
     // === DASH API ===
     public void DoDash()
     {
+        if (!Object.HasInputAuthority) return; // solo el dueño decide dash localmente (opcional)
         if (isDashing || isUsingUltimate) return;
         if (dashCooldownTimer > 0f) return;
         if (currentStamina < dashCost) return;
@@ -161,12 +178,14 @@ public class PlayerController : MonoBehaviour
         dashTimer = dashDuration;
         dashCooldownTimer = dashCooldown;
 
-        animator.SetTrigger("Dash");
+        if (animator) animator.SetTrigger("Dash");
     }
 
     // === Health & Shields API ===
     public void TakeDamage(float amount)
     {
+        if (!Object.HasStateAuthority) return; // aplicar daño solo en autoridad
+
         if (currentShields > 0)
         {
             currentShields--;
@@ -182,6 +201,7 @@ public class PlayerController : MonoBehaviour
 
     private void Die()
     {
+        // En network real, aquí notificarías al Host para respawn o game over compartido.
         GameOverUI ui = FindObjectOfType<GameOverUI>();
         if (ui != null)
         {
@@ -189,7 +209,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // fallback
             Time.timeScale = 0f;
             Debug.LogWarning("No hay GameOverUI en escena, solo congelando.");
         }
@@ -197,12 +216,14 @@ public class PlayerController : MonoBehaviour
 
     public void Heal(float amount)
     {
+        if (!Object.HasStateAuthority) return;
         if (currentHealth <= 0f) return;
         currentHealth = Mathf.Min(maxHealth, currentHealth + Mathf.Abs(amount));
     }
 
     public void AddShield(int amount)
     {
+        if (!Object.HasStateAuthority) return;
         currentShields = Mathf.Min(maxShields, currentShields + amount);
         Debug.Log($"[Player] Escudos actuales: {currentShields}");
     }
@@ -210,23 +231,26 @@ public class PlayerController : MonoBehaviour
     // === Ultimate API ===
     public void AddUltimateCharge(float amount)
     {
+        if (!Object.HasStateAuthority) return;
         ultimateCharge = Mathf.Clamp(ultimateCharge + amount, 0f, 100f);
     }
 
     public void ResetUltimate()
     {
+        if (!Object.HasStateAuthority) return;
         ultimateCharge = 0f;
     }
 
     public void DoUltimate()
     {
+        if (!Object.HasInputAuthority) return; // solo el dueño activa
         if (!CanUseUltimate || isUsingUltimate) return;
 
         isUsingUltimate = true;
         ultimateCharge = 0f;
         rb.velocity = Vector3.zero;
 
-        animator.SetTrigger("Ultimate");
+        if (animator) animator.SetTrigger("Ultimate");
         StartCoroutine(UltimateRoutine());
     }
 
@@ -235,10 +259,10 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(ultimateDuration);
         isUsingUltimate = false;
     }
-    public bool IsUsingUltimate => isUsingUltimate;
 
     public void FireUltimateBullet()
     {
+        if (!Object.HasInputAuthority) return; // dispara solo el dueño (local)
         if (sniperBulletPrefab == null || firePointUltimate == null) return;
 
         GameObject bullet = Instantiate(sniperBulletPrefab, firePointUltimate.position, firePointUltimate.rotation);
@@ -256,9 +280,8 @@ public class PlayerController : MonoBehaviour
     }
 
     // === Upgrades API ===
-    public void AddCoins(int amount) { coins += amount; }
-    public void IncreaseDamage(float amount) => damage += amount;
-    public void IncreaseMoveSpeed(float amount) => baseMoveSpeed += amount;
-    public void IncreaseAttackSpeed(float amount) => attackSpeed += amount;
-
+    public void AddCoins(int amount) { if (Object.HasStateAuthority) coins += amount; }
+    public void IncreaseDamage(float amount) { if (Object.HasStateAuthority) damage += amount; }
+    public void IncreaseMoveSpeed(float amount) { if (Object.HasStateAuthority) baseMoveSpeed += amount; }
+    public void IncreaseAttackSpeed(float amount) { if (Object.HasStateAuthority) attackSpeed += amount; }
 }

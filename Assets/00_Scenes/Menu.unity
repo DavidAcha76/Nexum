@@ -983,7 +983,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e58383bf5eb440e4eb5db70647ef6dc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPrefab: {fileID: 7094235857130408095, guid: 3f35f6ceded95b44496180addd39eab2, type: 3}
+  playerPrefab: {fileID: -502418819780910637, guid: aac0e8588610a4f4fa6f6900aecd1d33, type: 3}
   gameplaySceneBuildIndex: 0
   maxPlayers: 4
 --- !u!4 &963940871
