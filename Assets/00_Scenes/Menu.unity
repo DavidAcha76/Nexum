@@ -1290,9 +1290,9 @@ MonoBehaviour:
   p3: 0.65
   p4: 0.34
   p5: 0.01
-  pathE3: Video/E3
-  pathE4: Video/E4
-  pathE5: Video/E5
+  pathE3: Video/S3
+  pathE4: Video/S4
+  pathE5: Video/S5
   rollButton: {fileID: 123115328}
   goldText: {fileID: 1366912833}
   infoText: {fileID: 0}
@@ -1549,7 +1549,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -365, y: -28}
+  m_AnchoredPosition: {x: -365, y: -156}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1366912833
@@ -1666,7 +1666,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1367523546
 RectTransform:
   m_ObjectHideFlags: 0

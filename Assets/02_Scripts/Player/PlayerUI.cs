@@ -16,6 +16,8 @@ public class PlayerUI : MonoBehaviour
     public TMP_Text healthText;
     public TMP_Text staminaText;
     public TMP_Text ultimateText;
+    public TMP_Text coinsText;
+
 
     [Header("Stats Texts (TMP)")] // 👈 nuevos
     public TMP_Text damageText;
@@ -70,6 +72,9 @@ public class PlayerUI : MonoBehaviour
         // === Stats extras ===
         if (damageText != null)
             damageText.text = $"Damage: {player.Damage:0.##}";
+        // === Monedas ===
+        if (coinsText != null)
+            coinsText.text = $"Coins: {player.Coins}";
 
         if (moveSpeedText != null)
             moveSpeedText.text = $"Move Speed: {player.MoveSpeed:0.##}";
