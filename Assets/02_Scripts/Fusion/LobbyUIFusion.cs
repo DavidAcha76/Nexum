@@ -58,6 +58,7 @@ public class LobbyUIFusion : MonoBehaviour
         _ = Join();
     }
 
+
     private void GenerateRoomNameInput()
     {
         if (mainCanvas == null)
@@ -65,60 +66,77 @@ public class LobbyUIFusion : MonoBehaviour
             Debug.LogError("[LobbyUI] No hay Canvas. Asigna mainCanvas.");
             return;
         }
+        if (FindObjectOfType<UnityEngine.EventSystems.EventSystem>() == null)
+            new GameObject("EventSystem",
+              typeof(UnityEngine.EventSystems.EventSystem),
+              typeof(UnityEngine.EventSystems.StandaloneInputModule));
 
         // Fondo
         inputBackground = new GameObject("RoomNameBackground");
         inputBackground.transform.SetParent(mainCanvas.transform, false);
-
         var bgRect = inputBackground.AddComponent<RectTransform>();
-        bgRect.sizeDelta = new Vector2(250, 50);
+        bgRect.sizeDelta = new Vector2(260, 56);
         bgRect.anchorMin = bgRect.anchorMax = new Vector2(0.5f, 0.5f);
         bgRect.anchoredPosition = new Vector2(0, -80);
-
         var bgImage = inputBackground.AddComponent<Image>();
         bgImage.color = new Color(0f, 0f, 0f, 0.6f);
 
-        // Input
+        // Input root (con Image para raycasts)
         var inputGO = new GameObject("RoomNameInput");
         inputGO.transform.SetParent(inputBackground.transform, false);
+        var inputRect = inputGO.AddComponent<RectTransform>();
+        inputRect.sizeDelta = new Vector2(240, 44);
+        inputRect.anchorMin = inputRect.anchorMax = new Vector2(0.5f, 0.5f);
+        inputRect.anchoredPosition = Vector2.zero;
+        var inputImage = inputGO.AddComponent<Image>(); // targetGraphic
+        inputImage.color = new Color(1, 1, 1, 0.05f);
 
-        var rect = inputGO.AddComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(230, 40);
-        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
-        rect.anchoredPosition = Vector2.zero;
+        // Viewport (con máscara)
+        var viewportGO = new GameObject("Viewport");
+        viewportGO.transform.SetParent(inputGO.transform, false);
+        var viewportRect = viewportGO.AddComponent<RectTransform>();
+        viewportRect.anchorMin = new Vector2(0f, 0f);
+        viewportRect.anchorMax = new Vector2(1f, 1f);
+        viewportRect.offsetMin = new Vector2(8, 6);
+        viewportRect.offsetMax = new Vector2(-8, -6);
+        viewportGO.AddComponent<RectMask2D>();
 
-        roomNameInputInstance = inputGO.AddComponent<TMP_InputField>();
-
-        // Texto
+        // Text
         var textGO = new GameObject("Text");
-        textGO.transform.SetParent(inputGO.transform, false);
+        textGO.transform.SetParent(viewportGO.transform, false);
         var text = textGO.AddComponent<TextMeshProUGUI>();
         text.fontSize = 24;
-        text.alignment = TextAlignmentOptions.Center;
+        text.alignment = TextAlignmentOptions.Left;
+        text.enableWordWrapping = false;
         text.color = Color.white;
-        var textRect = textGO.GetComponent<RectTransform>();
+        var textRect = text.GetComponent<RectTransform>();
         textRect.anchorMin = Vector2.zero;
         textRect.anchorMax = Vector2.one;
         textRect.offsetMin = textRect.offsetMax = Vector2.zero;
-        roomNameInputInstance.textComponent = text;
 
         // Placeholder
         var placeholderGO = new GameObject("Placeholder");
-        placeholderGO.transform.SetParent(inputGO.transform, false);
+        placeholderGO.transform.SetParent(viewportGO.transform, false);
         var placeholder = placeholderGO.AddComponent<TextMeshProUGUI>();
         placeholder.fontSize = 22;
-        placeholder.alignment = TextAlignmentOptions.Center;
+        placeholder.alignment = TextAlignmentOptions.Left;
         placeholder.color = new Color(1f, 1f, 1f, 0.4f);
         placeholder.text = "Escribe el nombre de la sala";
-        var placeholderRect = placeholderGO.GetComponent<RectTransform>();
-        placeholderRect.anchorMin = Vector2.zero;
-        placeholderRect.anchorMax = Vector2.one;
-        placeholderRect.offsetMin = placeholderRect.offsetMax = Vector2.zero;
-        roomNameInputInstance.placeholder = placeholder;
+        var phRect = placeholder.GetComponent<RectTransform>();
+        phRect.anchorMin = Vector2.zero;
+        phRect.anchorMax = Vector2.one;
+        phRect.offsetMin = phRect.offsetMax = Vector2.zero;
 
+        // TMP_InputField
+        roomNameInputInstance = inputGO.AddComponent<TMP_InputField>();
+        roomNameInputInstance.targetGraphic = inputImage;
+        roomNameInputInstance.textViewport = viewportRect;
+        roomNameInputInstance.textComponent = text;
+        roomNameInputInstance.placeholder = placeholder;
         roomNameInputInstance.characterLimit = 20;
         roomNameInputInstance.contentType = TMP_InputField.ContentType.Standard;
     }
+
 
     private string RoomNameOrDefault()
     {

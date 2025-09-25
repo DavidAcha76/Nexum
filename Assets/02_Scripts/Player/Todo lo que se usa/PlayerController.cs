@@ -132,7 +132,7 @@ public class PlayerController : NetworkBehaviour
             if (animator)
             {
                 animator.SetBool("isWalking", move.sqrMagnitude > 0.01f);
-                animator.SetBool("Idle", move.sqrMagnitude <= 0.01f);
+                //animator.SetBool("Idle", move.sqrMagnitude <= 0.01f);
             }
         }
 

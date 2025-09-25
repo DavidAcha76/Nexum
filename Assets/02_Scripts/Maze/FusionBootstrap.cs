@@ -4,9 +4,10 @@
 // - Elimina cualquier uso de SimulationConfig.Topologies.*
 // - Condición de spawn: Host/Server o GameMode.Shared.
 
-using System.Collections.Generic;
 using Fusion;
 using Fusion.Sockets;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class FusionBootstrap : MonoBehaviour, INetworkRunnerCallbacks
@@ -61,6 +62,49 @@ public class FusionBootstrap : MonoBehaviour, INetworkRunnerCallbacks
     // =========================
     // INetworkRunnerCallbacks
     // =========================
+
+    public async Task StartHost(string room)
+    {
+        await StartRunner(GameMode.Host, room);
+    }
+    public async Task StartClient(string room)
+    {
+        await StartRunner(GameMode.Client, room);
+    }
+    public async Task QuickJoinOrCreate(string room)
+    {
+        // intenta Client; si falla, Host
+        var ok = await StartRunner(GameMode.Client, room);
+        if (!ok) await StartRunner(GameMode.Host, room);
+    }
+
+    private async Task<bool> StartRunner(GameMode mode, string room)
+    {
+        if (_runner == null)
+        {
+            _runner = gameObject.AddComponent<NetworkRunner>();
+            _sceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>();
+            _runner.ProvideInput = true;
+            _runner.AddCallbacks(this);
+        }
+        var args = new StartGameArgs
+        {
+            GameMode = mode,
+            SessionName = room,
+            SceneManager = _sceneManager,
+            Scene = SceneRef.FromIndex(
+            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex)
+        };
+        var result = await _runner.StartGame(args);
+        if (!result.Ok)
+        {
+            Debug.LogError($"Fusion StartGame falló: {result.ShutdownReason}");
+            return false;
+        }
+        _map = FindObjectOfType<PlaceMazeOnPlace>();
+        return true;
+    }
+
 
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
