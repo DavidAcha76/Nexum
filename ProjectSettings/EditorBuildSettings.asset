@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/00_Scenes/EventAR.unity
+    guid: 0311a3d2336ebb84ba584cce0c491a6a
+  - enabled: 1
     path: Assets/00_Scenes/Draft.unity
     guid: c1a75a3610b8d4a4b840a80cc395d462
   - enabled: 0
