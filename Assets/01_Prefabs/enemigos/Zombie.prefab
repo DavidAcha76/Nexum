@@ -1069,8 +1069,8 @@ Transform:
   m_GameObject: {fileID: 7648967774615257852}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.0021, y: 0.91, z: -7.1135}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 10, y: 10, z: 10}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3259785664243464402}
@@ -1119,6 +1119,13 @@ MonoBehaviour:
   damageReduction: 0
   coinPrefab: {fileID: 4838129900807655917, guid: d09577b28190e1343aa13ff8c7b033f4, type: 3}
   coinDropChance: 1
+  powerupPrefabs:
+  - {fileID: 3088043183656615941, guid: 746c61a19aaf2a0449048d5f59a55355, type: 3}
+  - {fileID: 5041845936586410612, guid: 5c14f6e7d90c8e642818cb085f017a0c, type: 3}
+  - {fileID: 1592431450312742440, guid: 64f56e68c57b8b74e85790e032ed204c, type: 3}
+  - {fileID: 3799710597768424320, guid: 4d8cd445d67d6a246b0f989d392a8fee, type: 3}
+  - {fileID: 7892687145889621722, guid: 50a6b9cbad37c2d4f930788b80b366c9, type: 3}
+  powerupDropChance: 0.3
   attackDamage: 1
   attackRange: 0.5
   attackCooldown: 1

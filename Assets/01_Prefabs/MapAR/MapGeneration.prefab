@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5590113431191230298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1939350870521558887}
+  - component: {fileID: 1847965756499979961}
+  m_Layer: 0
+  m_Name: MapGeneration
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1939350870521558887
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5590113431191230298}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 312.69342, y: -238.59546, z: 1010.2926}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1847965756499979961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5590113431191230298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df4fa1aa202a5a043a49e53fdf2bbe70, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  floorPrefab: {fileID: 1774565267533234777, guid: a8ca5d5f58996244b8ce7f0e3be2b9f1, type: 3}
+  wallPrefab: {fileID: 7288274789959621777, guid: ae59cdf2e3b16eb4ab35de513ce09740, type: 3}
+  playerPrefab: {fileID: 3647880978057150640, guid: aac0e8588610a4f4fa6f6900aecd1d33, type: 3}
+  exitPrefab: {fileID: 6104368539207582124, guid: 5cd6d81417584744c869588153f3a10d, type: 3}
+  enemyPrefabs:
+  - {fileID: 7648967774615257852, guid: c985eab934147434f8e00f62bd82011a, type: 3}
+  totalEnemies: 8
+  enemySpawnJitter: 0
+  trapFloorPrefab: {fileID: 1774565267533234777, guid: 96bb61f2ef4ee68488639b82cf2782b2, type: 3}
+  trapProbability: 0.015
+  trapSafeRadius: 2
+  width: 80
+  height: 60
+  cellSize: 3
+  maxRoomAttempts: 60
+  maxRooms: 12
+  roomMinW: 6
+  roomMinH: 6
+  roomMaxW: 14
+  roomMaxH: 12
+  mazeRoomRatio: 0.5
+  mazeGridStep: 2
+  useFixedSeed: 0
+  seed: 12345
+  floorMask:
+    serializedVersion: 2
+    m_Bits: 0
+  spawnRayHeight: 50
+  spawnYOffset: 0.1

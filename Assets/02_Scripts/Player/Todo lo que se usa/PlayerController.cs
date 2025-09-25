@@ -28,11 +28,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float maxHealth = 100f;
     private float currentHealth;
 
+    [Header("Shields")]
+    [SerializeField] private int maxShields = 3; // máximo acumulable
+    private int currentShields = 0;
+
     [Header("Upgrades")]
     [SerializeField] int coins = 0;
     [SerializeField] float damage = 10f;
     [SerializeField] float attackSpeed = 1f;
-    [SerializeField] int multiShot = 1;
 
     [Header("Refs")]
     public SimpleJoystick moveJoystick;
@@ -46,22 +49,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float ultimateDuration = 3f;
     private bool isUsingUltimate = false;
 
-    public GameObject sniperBulletPrefab; // Prefab de bala ultimate
-    public Transform firePointUltimate;   // FirePoint para la ulti (puedes usar el mismo)
+    public GameObject sniperBulletPrefab;
+    public Transform firePointUltimate;
 
     public bool CanUseUltimate => ultimateCharge >= 100f;
-    public float Ultimate01 => ultimateCharge / 100f; // para la UI
+    public float Ultimate01 => ultimateCharge / 100f;
 
     // === accesores para UI ===
     public int Coins => coins;
     public float Damage => damage;
     public float AttackSpeed => attackSpeed;
-    public int MultiShot => multiShot;
 
     public float Health => currentHealth;
     public float Health01 => currentHealth / maxHealth;
     public float Stamina => currentStamina;
     public float Stamina01 => currentStamina / maxStamina;
+
+    public float MaxHealth => maxHealth;
+    public float MaxStamina => maxStamina;
+    public int CurrentShields => currentShields;
+    public int MaxShields => maxShields;
 
     void Awake()
     {
@@ -74,19 +81,18 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
 
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         currentHealth = maxHealth;
         currentStamina = maxStamina;
 
-        if (firePointUltimate == null) firePointUltimate = firePoint; // fallback
+        if (firePointUltimate == null) firePointUltimate = firePoint;
     }
 
     void FixedUpdate()
     {
-        // 🔹 si está en ultimate, bloquea todo
         if (isUsingUltimate)
         {
             rb.velocity = Vector3.zero;
@@ -94,7 +100,6 @@ public class PlayerController : MonoBehaviour
             return;
         }
 
-        // === Movimiento normal ===
         if (!isDashing)
         {
             Vector2 inputDir = moveJoystick ? moveJoystick.Direction : Vector2.zero;
@@ -105,20 +110,16 @@ public class PlayerController : MonoBehaviour
             velocity.y = rb.velocity.y;
             rb.velocity = velocity;
 
-            // Rotación hacia dirección de movimiento
             if (move.sqrMagnitude > 0.001f)
             {
                 firePoint.rotation = Quaternion.LookRotation(move, Vector3.up);
                 transform.rotation = firePoint.rotation;
             }
 
-            // Animaciones
             animator.SetBool("isWalking", move.sqrMagnitude > 0.01f);
-            if (move.sqrMagnitude <= 0.01f) animator.SetBool("Idle", true);
-            else animator.SetBool("Idle", false);
+            animator.SetBool("Idle", move.sqrMagnitude <= 0.01f);
         }
 
-        // === Dash en progreso ===
         if (isDashing)
         {
             dashTimer -= Time.fixedDeltaTime;
@@ -129,11 +130,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        // === Cooldown del dash ===
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.fixedDeltaTime;
 
-        // === Regeneración de stamina ===
         staminaRegenTimer += Time.fixedDeltaTime;
         if (staminaRegenTimer >= staminaRegenDelay)
         {
@@ -152,7 +151,7 @@ public class PlayerController : MonoBehaviour
         currentStamina -= dashCost;
         staminaRegenTimer = 0f;
 
-        float dashDistance = 5f;
+        float dashDistance = 2f;
         Vector3 dashDir = transform.forward;
         float dashSpeed = dashDistance / dashDuration;
 
@@ -165,18 +164,34 @@ public class PlayerController : MonoBehaviour
         animator.SetTrigger("Dash");
     }
 
-    // === Health API ===
+    // === Health & Shields API ===
     public void TakeDamage(float amount)
     {
-        if (currentHealth <= 0f) return;
-
-        currentHealth -= Mathf.Abs(amount);
-
-        if (currentHealth <= 0f)
+        if (currentShields > 0)
         {
-            currentHealth = 0f;
-            if (GameManager.Instance != null)
-                GameManager.Instance.GameOver();
+            currentShields--;
+            Debug.Log($"[Player] Escudo bloqueó el daño. Escudos restantes: {currentShields}");
+            return;
+        }
+
+        currentHealth -= amount;
+        Debug.Log($"[Player] Recibió {amount} daño → HP restante: {currentHealth}");
+
+        if (currentHealth <= 0f) Die();
+    }
+
+    private void Die()
+    {
+        GameOverUI ui = FindObjectOfType<GameOverUI>();
+        if (ui != null)
+        {
+            ui.ShowGameOver();
+        }
+        else
+        {
+            // fallback
+            Time.timeScale = 0f;
+            Debug.LogWarning("No hay GameOverUI en escena, solo congelando.");
         }
     }
 
@@ -184,6 +199,12 @@ public class PlayerController : MonoBehaviour
     {
         if (currentHealth <= 0f) return;
         currentHealth = Mathf.Min(maxHealth, currentHealth + Mathf.Abs(amount));
+    }
+
+    public void AddShield(int amount)
+    {
+        currentShields = Mathf.Min(maxShields, currentShields + amount);
+        Debug.Log($"[Player] Escudos actuales: {currentShields}");
     }
 
     // === Ultimate API ===
@@ -216,31 +237,28 @@ public class PlayerController : MonoBehaviour
     }
     public bool IsUsingUltimate => isUsingUltimate;
 
-    // 🔹 Llamado desde Animation Event en el frame de disparo
     public void FireUltimateBullet()
     {
         if (sniperBulletPrefab == null || firePointUltimate == null) return;
 
         GameObject bullet = Instantiate(sniperBulletPrefab, firePointUltimate.position, firePointUltimate.rotation);
-
         Projectile proj = bullet.GetComponent<Projectile>();
         if (proj != null)
         {
-            proj.damage *= 5f; // más daño
-            proj.speed *= 2f;  // más rápido
+            proj.damage *= 5f;
+            proj.speed *= 2f;
         }
     }
 
     public void AddKill()
     {
-        AddUltimateCharge(20f); // o usa chargePerKill si lo tienes configurado
+        AddUltimateCharge(20f);
     }
-
 
     // === Upgrades API ===
     public void AddCoins(int amount) { coins += amount; }
     public void IncreaseDamage(float amount) => damage += amount;
     public void IncreaseMoveSpeed(float amount) => baseMoveSpeed += amount;
     public void IncreaseAttackSpeed(float amount) => attackSpeed += amount;
-    public void AddMultiShot(int extra) => multiShot += extra;
+
 }

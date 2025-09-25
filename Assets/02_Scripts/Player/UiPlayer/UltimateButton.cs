@@ -1,33 +1,38 @@
+﻿
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-
 public class UltimateButton : MonoBehaviour, IPointerDownHandler
 {
     private PlayerController player;
-    public Image chargeFill; // arr�strale en el Inspector el Fill de la barra
-
+    public Image chargeFill; // arrástrale en el Inspector el Fill de la barra
     public Button button;
 
     void Start()
     {
-        player = FindObjectOfType<PlayerController>();
         if (button == null) button = GetComponent<Button>();
-
         if (button != null)
             button.onClick.AddListener(OnUltimatePressed);
     }
 
     void Update()
     {
+        // 👇 Buscar al player dinámicamente como en DashButton
+        if (player == null)
+        {
+            player = FindObjectOfType<PlayerController>();
+            if (player != null)
+                Debug.Log("[UltimateButton] Player encontrado en runtime.");
+        }
+
         if (player == null) return;
 
         // actualizar barra
         if (chargeFill != null)
             chargeFill.fillAmount = player.Ultimate01;
 
-        // activar bot�n solo si est� lista
+        // activar botón solo si está lista
         if (button != null)
             button.interactable = player.CanUseUltimate;
     }

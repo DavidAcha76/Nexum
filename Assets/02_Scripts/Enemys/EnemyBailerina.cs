@@ -81,7 +81,17 @@ public class EnemyBailerina : EnemyBase
 
         if (!clonePrefab) return;
 
+        // 🔹 Posición tentativa (a la derecha del enemigo)
         Vector3 spawnPos = transform.position + transform.right * 2f;
+
+        // 🔹 Ajuste al suelo con raycast
+        Ray ray = new Ray(spawnPos + Vector3.up * 5f, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit, 10f))
+        {
+            spawnPos.y = hit.point.y + 0.1f; // un pelín sobre el piso
+        }
+
         Instantiate(clonePrefab, spawnPos, transform.rotation);
     }
+
 }

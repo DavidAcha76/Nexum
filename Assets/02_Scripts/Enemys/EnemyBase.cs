@@ -25,6 +25,11 @@ public class EnemyBase : MonoBehaviour
     public GameObject coinPrefab;
     public float coinDropChance = 1f; // 1 = 100%, 0.5 = 50%
 
+    [Space(5)]
+    public GameObject[] powerupPrefabs; // 👉 aquí arrastras tus 5 prefabs
+    [Range(0f, 1f)] public float powerupDropChance = 0.3f; // 0.3 = 30%
+
+
     // === Inicialización ===
     protected virtual void Awake()
     {
@@ -71,13 +76,28 @@ public class EnemyBase : MonoBehaviour
 
         Debug.Log($"[{gameObject.name}] murió");
 
+        // 💰 Drop de monedas
         if (coinPrefab && UnityEngine.Random.value <= coinDropChance)
         {
-            Instantiate(coinPrefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+            Instantiate(coinPrefab, transform.position + Vector3.up * 0.1f, Quaternion.identity);
+        }
+
+        // ⭐ Drop de Powerup
+        if (powerupPrefabs.Length > 0 && UnityEngine.Random.value <= powerupDropChance)
+        {
+            int index = UnityEngine.Random.Range(0, powerupPrefabs.Length);
+            GameObject prefab = powerupPrefabs[index];
+            if (prefab != null)
+            {
+                Instantiate(prefab, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+                Debug.Log($"[{gameObject.name}] soltó powerup: {prefab.name}");
+            }
         }
 
         Destroy(gameObject);
     }
+
+
 
     // === Utilidades de movimiento y target ===
     protected Transform FindClosestPlayer()

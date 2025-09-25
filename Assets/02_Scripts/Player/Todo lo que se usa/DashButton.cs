@@ -1,4 +1,5 @@
 ﻿
+
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,6 +13,15 @@ public class DashButton : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         player = FindObjectOfType<PlayerController>();
         if (player == null)
             Debug.LogWarning("[DashButton] No se encontró PlayerController en escena.");
+    }
+    void Update()
+    {
+        if (player == null)
+        {
+            player = FindObjectOfType<PlayerController>();
+            if (player != null)
+                Debug.Log("[DashButton] Player encontrado en runtime.");
+        }
     }
 
     public void OnPointerDown(PointerEventData eventData)

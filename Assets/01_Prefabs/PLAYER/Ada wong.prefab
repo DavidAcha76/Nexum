@@ -40,8 +40,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.014123872
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
       propertyPath: m_LocalPosition.y
@@ -49,7 +61,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.00468833
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 001fef01c5665064885794f207562a88, type: 3}
       propertyPath: m_LocalRotation.w
@@ -191,7 +203,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &319017445928513764
 MonoBehaviour:
@@ -223,9 +235,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb94cddeb20cbae49bcb98d39f56aeef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseMoveSpeed: 5
-  dashForce: 12
-  dashDuration: 0.2
+  baseMoveSpeed: 1.5
+  dashForce: 4
+  dashDuration: 0.4
   dashCooldown: 1
   dashCost: 30
   maxStamina: 100

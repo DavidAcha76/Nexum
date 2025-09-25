@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5844843828558516217
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1962324314238496348}
+  m_Layer: 0
+  m_Name: FirePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1962324314238496348
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5844843828558516217}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.01, z: 0.01}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5925541313646094041}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &6174849688550474034
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54,7 +85,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: b3ee5f3811fa4f6468b93d5d520432bb, type: 2}
     - target: {fileID: 919132149155446097, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       propertyPath: m_Name
-      value: tripo_convert_7d6de84d-bec4-472f-8bf6-7d9be54a03c6@Standing Taunt Battlecry
+      value: Boss
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       propertyPath: m_TagString
@@ -74,12 +105,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1962324314238496348}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8144265448680285231}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8247820025498509491}
   m_SourcePrefab: {fileID: 100100000, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
+--- !u!4 &5925541313646094041 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
+  m_PrefabInstance: {fileID: 6174849688550474034}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &6444669494718020707 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
@@ -106,3 +148,48 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &8247820025498509491
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6444669494718020707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d4631a2e0e130c48a41812949208819, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  moveSpeed: 4
+  detectionRange: 15
+  stopDistance: 1.6
+  maxHealth: 100
+  currentHealth: 0
+  damageReduction: 0
+  coinPrefab: {fileID: 4838129900807655917, guid: d09577b28190e1343aa13ff8c7b033f4, type: 3}
+  coinDropChance: 1
+  powerupPrefabs:
+  - {fileID: 3088043183656615941, guid: 746c61a19aaf2a0449048d5f59a55355, type: 3}
+  - {fileID: 5041845936586410612, guid: 5c14f6e7d90c8e642818cb085f017a0c, type: 3}
+  - {fileID: 1592431450312742440, guid: 64f56e68c57b8b74e85790e032ed204c, type: 3}
+  - {fileID: 3799710597768424320, guid: 4d8cd445d67d6a246b0f989d392a8fee, type: 3}
+  - {fileID: 7892687145889621722, guid: 50a6b9cbad37c2d4f930788b80b366c9, type: 3}
+  powerupDropChance: 0.713
+  bossMaxHP: 300
+  animator: {fileID: 0}
+  specialAttackClip: {fileID: 0}
+  muzzle: {fileID: 1962324314238496348}
+  projectilePrefab: {fileID: 0}
+  preferMinDist: 6
+  preferMaxDist: 12
+  approachSpeed: 3
+  chargeTime: 1.5
+  starBulletCount: 12
+  shotgunCount: 5
+  shotgunSpread: 15
+  metralletaCount: 3
+  metralletaDelay: 0.2
+  bulletSpeed: 14
+  bulletLife: 4
+  bulletDamage: 12

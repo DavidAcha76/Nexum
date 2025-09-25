@@ -6,32 +6,28 @@ public class PlayerStatsUI : MonoBehaviour
 {
     [SerializeField] PlayerController player; // se puede asignar dinámico
 
+    [Header("Texts")]
     public Text coinsText;
     public Text damageText;
     public Text attackSpeedText;
-    public Text multiShotText;
     public Text moveSpeedText;
-    public Image healthBar;
-    public Image staminaBar;
+    public Text shieldsText;
 
     void Update()
     {
-        // 👀 Si aún no tenemos referencia, intenta buscar al Player en escena
+        // 👀 Buscar al Player en runtime si aún no está asignado
         if (player == null)
         {
             player = FindObjectOfType<PlayerController>();
             if (player == null) return; // no hay Player todavía
         }
 
-        // === UI ===
+        // === Stats visibles ===
         if (coinsText) coinsText.text = $"Coins: {player.Coins}";
         if (damageText) damageText.text = $"Damage: {player.Damage:0.##}";
         if (attackSpeedText) attackSpeedText.text = $"Attack Speed: {player.AttackSpeed:0.##}";
-        if (multiShotText) multiShotText.text = $"MultiShot: {player.MultiShot}";
         if (moveSpeedText) moveSpeedText.text = $"Move Speed: {player.MoveSpeed:0.##}";
-
-        if (healthBar) healthBar.fillAmount = player.Health01;
-        if (staminaBar) staminaBar.fillAmount = player.Stamina01;
+        if (shieldsText) shieldsText.text = $"Shields: {player.CurrentShields}/{player.MaxShields}";
     }
 
     // 👌 Método público para asignar el Player cuando spawnee

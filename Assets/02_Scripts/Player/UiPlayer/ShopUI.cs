@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
 public class ShopUI : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class ShopUI : MonoBehaviour
     {
         shopPanel.SetActive(false);
 
-        // Busca al PlayerController en la escena (asegúrate que tu Player tenga este script)
+        // Busca al PlayerController en la escena
         player = FindObjectOfType<PlayerController>();
     }
 
@@ -57,15 +58,27 @@ public class ShopUI : MonoBehaviour
         }
     }
 
-    public void BuyMultiShot()
+    public void BuyHeal()
     {
-        int cost = 15;
-        int amount = 1;
+        int cost = 8;
+        float amount = 20f; // vida que recupera
         if (player != null && player.Coins >= cost)
         {
             player.AddCoins(-cost);
-            player.AddMultiShot(amount);
-            Debug.Log($"Compraste +{amount} MultiShot");
+            player.Heal(amount);
+            Debug.Log($"Compraste cura de {amount} HP");
+        }
+    }
+
+    public void BuyShield()
+    {
+        int cost = 15;
+        int amount = 1; // un escudo bloquea 1 golpe
+        if (player != null && player.Coins >= cost)
+        {
+            player.AddCoins(-cost);
+            player.AddShield(amount);
+            Debug.Log($"Compraste +{amount} escudo(s). Escudos actuales: {player.CurrentShields}");
         }
     }
 }
