@@ -244,10 +244,10 @@ MonoBehaviour:
   staminaRegenPerSecond: 20
   staminaRegenDelay: 0.5
   maxHealth: 100
+  maxShields: 3
   coins: 0
   damage: 10
   attackSpeed: 1
-  multiShot: 1
   moveJoystick: {fileID: 0}
   firePoint: {fileID: 2709118411987865865}
   ultimateCharge: 0
