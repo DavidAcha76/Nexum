@@ -59,6 +59,12 @@ public class RogueLikeMiniMazes : MonoBehaviour
     public bool useFixedSeed = false;
     public int seed = 12345;
 
+    // 1) Campos nuevos:
+    [Header("Anchor (AR)")]
+    public Transform parent;               // anchor donde instanciar (ej: MazeAnchor)
+    public bool autoBuildOnStart = false;  // si quieres construir en Start solo si hay parent
+    public Action OnBuilt;
+
     [Header("Spawn & Piso")]
     [Tooltip("Capa del piso para raycast (opcional)")]
     public LayerMask floorMask;
@@ -92,13 +98,64 @@ public class RogueLikeMiniMazes : MonoBehaviour
 
     void Start()
     {
+        if (!autoBuildOnStart || parent == null) return;
+
         InitRandom();
         ClampInputs();
         Generate();
-        BuildVisuals();           // crea walls y pisos base
-        PickEndpointsAndSpawn();  // player + portal
-        PlaceTraps();             // reemplaza ciertos pisos por trampas
-        SpawnEnemies();           // enemigos
+        BuildVisuals();
+        PickEndpointsAndSpawn();
+        PlaceTraps();
+        SpawnEnemies();
+        OnBuilt?.Invoke();
+    }
+
+    // 3) Método para usarlo desde AR:
+    public void SetAnchor(Transform anchor, bool rebuild = true)
+    {
+        parent = anchor;
+        if (parent) parent.up = Vector3.up;
+        if (!rebuild) return;
+
+        // Limpia hijos anteriores del parent (si re-colocas)
+        ClearChildrenOfParent();
+
+        InitRandom();
+        ClampInputs();
+        Generate();
+        BuildVisuals();
+        PickEndpointsAndSpawn();
+        PlaceTraps();
+        SpawnEnemies();
+        OnBuilt?.Invoke();
+    }
+
+    // 4) Utilidades de colocación: origen centrado y world pos relativo al parent
+    Vector3 GetOriginCentered()
+    {
+        if (!parent) parent = transform;
+        float totalX = width * cellSize;
+        float totalZ = height * cellSize;
+        return parent.position
+             - parent.right * (totalX * 0.5f)
+             - parent.forward * (totalZ * 0.5f);
+    }
+
+    Vector3 CellCenterToWorld(int x, int y)
+    {
+        Vector3 origin = GetOriginCentered();
+        return origin
+             + parent.right * (x * cellSize + cellSize * 0.5f)
+             + parent.forward * (y * cellSize + cellSize * 0.5f);
+    }
+
+    void ClearChildrenOfParent()
+    {
+        if (!parent) return;
+        var toDestroy = new System.Collections.Generic.List<GameObject>();
+        for (int i = 0; i < parent.childCount; i++)
+            toDestroy.Add(parent.GetChild(i).gameObject);
+        foreach (var go in toDestroy) Destroy(go);
     }
 
     #region Setup
@@ -237,7 +294,7 @@ public class RogueLikeMiniMazes : MonoBehaviour
         ForEachCell((x, y) =>
         {
             if (!walk[x, y]) return;
-            var f = Instantiate(floorPrefab, GridToWorld(x, y), Quaternion.identity, transform);
+            var f = Instantiate(floorPrefab, CellCenterToWorld(x, y), parent.rotation, parent);
             floorRefs[x, y] = f;
         });
 
@@ -245,17 +302,37 @@ public class RogueLikeMiniMazes : MonoBehaviour
         ForEachCell((x, y) =>
         {
             if (!walk[x, y]) return;
-            Vector3 basePos = GridToWorld(x, y);
+            Vector3 basePos = CellCenterToWorld(x, y);   // usa método centrado en el anchor
 
+            // Norte (+Z)
             if (!IsWalk(x, y + 1))
-                Instantiate(wallPrefab, basePos + new Vector3(0, 0, half), Quaternion.identity, transform);
+                Instantiate(wallPrefab,
+                    basePos + parent.forward * half,
+                    parent.rotation,
+                    parent);
+
+            // Este (+X)
             if (!IsWalk(x + 1, y))
-                Instantiate(wallPrefab, basePos + new Vector3(half, 0, 0), Quaternion.Euler(0, 90, 0), transform);
+                Instantiate(wallPrefab,
+                    basePos + parent.right * half,
+                    Quaternion.AngleAxis(90f, parent.up) * parent.rotation,
+                    parent);
+
+            // Sur (–Z)
             if (!IsWalk(x, y - 1))
-                Instantiate(wallPrefab, basePos + new Vector3(0, 0, -half), Quaternion.identity, transform);
+                Instantiate(wallPrefab,
+                    basePos - parent.forward * half,
+                    parent.rotation,
+                    parent);
+
+            // Oeste (–X)
             if (!IsWalk(x - 1, y))
-                Instantiate(wallPrefab, basePos + new Vector3(-half, 0, 0), Quaternion.Euler(0, 90, 0), transform);
+                Instantiate(wallPrefab,
+                    basePos - parent.right * half,
+                    Quaternion.AngleAxis(90f, parent.up) * parent.rotation,
+                    parent);
         });
+
     }
     #endregion
 

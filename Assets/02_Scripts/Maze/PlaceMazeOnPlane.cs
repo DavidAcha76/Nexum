@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARSubsystems;
@@ -12,6 +12,10 @@ public class PlaceMazeOnPlane : MonoBehaviour
     [Header("Opciones")]
     public bool placeOnlyOnce = true;
     public bool hidePlaneMeshAfterPlace = true;
+
+    [Header("Escala global del mapa")]
+    [Range(10f, 300f)]
+    public float mapScalePercent = 100f; // 100 = tamaño original
 
     // AR managers
     private ARRaycastManager _ray;
@@ -47,13 +51,24 @@ public class PlaceMazeOnPlane : MonoBehaviour
             // 1) Crear anchor
             Transform parent = CreateAnchor(hit, pose, out ARPlane plane);
 
-            // 2) Instanciar el RogueLikeMiniMazes en ese anchor
+            // 2) Aplicar escala global del mapa (antes de construir)
+            ApplyScaleToAnchor(parent);
+
+            // 3) Instanciar el RogueLikeMiniMazes bajo ese anchor
             if (mazePrefab != null)
             {
-                Instantiate(mazePrefab, pose.position, pose.rotation, parent);
+                var go = Instantiate(mazePrefab, pose.position, pose.rotation, parent);
+
+                // Llamar SetAnchor para que construya centrado y como hijos del anchor
+                var gen = go.GetComponent<RogueLikeMiniMazes>();
+                if (gen != null)
+                {
+                    gen.autoBuildOnStart = false;     // nos encargamos nosotros
+                    gen.SetAnchor(parent, rebuild: true);
+                }
             }
 
-            // 3) Opcional: ocultar el plano usado
+            // 4) Opcional: ocultar el plano usado
             if (hidePlaneMeshAfterPlace && plane)
             {
                 var vis = plane.GetComponent<ARPlaneMeshVisualizer>();
@@ -72,7 +87,6 @@ public class PlaceMazeOnPlane : MonoBehaviour
         Transform parent = null;
 
         if (_planes) plane = _planes.GetPlane(hit.trackableId);
-
         if (_anchors && plane)
         {
             var anchor = _anchors.AttachAnchor(plane, pose);
@@ -92,5 +106,11 @@ public class PlaceMazeOnPlane : MonoBehaviour
         _mazeAnchor = parent;
         _mazeAnchor.name = "MazeAnchor";
         return parent;
+    }
+
+    void ApplyScaleToAnchor(Transform parent)
+    {
+        float k = Mathf.Max(0.01f, mapScalePercent / 100f);
+        parent.localScale = Vector3.one * k;
     }
 }
