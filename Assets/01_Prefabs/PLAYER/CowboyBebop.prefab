@@ -113,6 +113,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0a062b04ee3f1944e8d01ad6beb132a7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1137396183962933022}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 0a062b04ee3f1944e8d01ad6beb132a7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6503045525677244270}
   m_SourcePrefab: {fileID: 100100000, guid: 0a062b04ee3f1944e8d01ad6beb132a7, type: 3}
 --- !u!4 &4612560030173754474 stripped
 Transform:
@@ -164,10 +167,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.0059167957
-  m_Height: 0.020781964
+  m_Radius: 0.0043543987
+  m_Height: 0.01842478
   m_Direction: 1
-  m_Center: {x: 0.0002932269, y: 0.0100658685, z: 0.0009205332}
+  m_Center: {x: 0.00032770634, y: 0.008887276, z: 0.0005724607}
 --- !u!54 &1445679593480442684
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -245,3 +248,21 @@ MonoBehaviour:
   firePoint: {fileID: 3569402036447939153}
   bulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
   player: {fileID: 3028347107095851287}
+--- !u!114 &6503045525677244270
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5424808145331138256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 3869485059
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0

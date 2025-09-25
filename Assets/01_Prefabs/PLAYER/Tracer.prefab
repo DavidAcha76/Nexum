@@ -147,6 +147,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 788944d7754249148a8bce5310dc0797, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5784613959430055613}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 788944d7754249148a8bce5310dc0797, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 511956767867429104}
   m_SourcePrefab: {fileID: 100100000, guid: 788944d7754249148a8bce5310dc0797, type: 3}
 --- !u!1 &170690371174517321 stripped
 GameObject:
@@ -193,10 +196,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.006790152
-  m_Height: 0.020272374
+  m_Radius: 0.0048808698
+  m_Height: 0.017656207
   m_Direction: 1
-  m_Center: {x: -0.00013137609, y: 0.0089895725, z: 0.001605764}
+  m_Center: {x: 0.00024024956, y: 0.008420825, z: 0.001605764}
 --- !u!54 &5490972170357501338
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -274,6 +277,24 @@ MonoBehaviour:
   ultimateDuration: 3
   sniperBulletPrefab: {fileID: 7346132796244231119, guid: d37e1688a1148c445bdf0e73b8ebbc84, type: 3}
   firePointUltimate: {fileID: 8443008313598740487}
+--- !u!114 &511956767867429104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 170690371174517321}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2574112815
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours: []
+  ForceRemoteRenderTimeframe: 0
 --- !u!4 &654633075826725107 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 788944d7754249148a8bce5310dc0797, type: 3}

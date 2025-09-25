@@ -10,6 +10,7 @@ public class PlayerLocalCamera : NetworkBehaviour
     public Camera playerCamera;
     public AudioListener playerAudio;
 
+
     public override void Spawned()
     {
         bool isLocal = Object.HasInputAuthority; // este runner controla este player
