@@ -1,7 +1,6 @@
-﻿using Fusion;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PlayerShooter : NetworkBehaviour
+public class PlayerShooter : MonoBehaviour
 {
     [Header("Config")]
     public string enemyTag = "Enemy";
@@ -23,16 +22,14 @@ public class PlayerShooter : NetworkBehaviour
 
     void Update()
     {
-        // Dispara solo el dueño del input
-        if (!Object.HasInputAuthority) return;
-
         if (player == null) return;
+
+        // 🚫 No disparar si está en ultimate
         if (player.IsUsingUltimate) return;
 
         shootTimer -= Time.deltaTime;
 
-        // No disparar si se está moviendo (usa MoveInput replicado)
-        Vector2 moveInput = player.MoveInput;
+        Vector2 moveInput = player.moveJoystick ? player.moveJoystick.Direction : Vector2.zero;
         bool isMoving = moveInput.sqrMagnitude > 0.01f;
         if (isMoving) return;
 
@@ -51,10 +48,10 @@ public class PlayerShooter : NetworkBehaviour
         if (shootTimer <= 0f)
         {
             Shoot();
-            // Usa la AttackSpeed expuesta; si es 0, cae al delay
             shootTimer = player.AttackSpeed > 0 ? 1f / player.AttackSpeed : autoShootDelay;
         }
     }
+
 
     GameObject FindClosestEnemy()
     {
@@ -75,29 +72,15 @@ public class PlayerShooter : NetworkBehaviour
         return closest;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.StateAuthority)]
-    public void RPC_Shoot(Vector3 pos, Quaternion rot)
-    {
-        Runner.Spawn(bulletPrefab.GetComponent<NetworkObject>(), pos, rot, Object.InputAuthority);
-    }
-
     void Shoot()
     {
         if (bulletPrefab == null || firePoint == null) return;
 
-        // Cliente pide spawn al server (a menos que sea GameMode.Shared)
-        if (!Runner.IsServer && Runner.GameMode != GameMode.Shared)
-        {
-            RPC_Shoot(firePoint.position, firePoint.rotation);
-            return;
-        }
+        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
 
-        // Host/Server spawnea la bala
-        Runner.Spawn(
-            bulletPrefab.GetComponent<NetworkObject>(),
-            firePoint.position,
-            firePoint.rotation,
-            Object.InputAuthority
-        );
+        if (animator != null)
+            animator.SetTrigger("Shoot"); // 🔹 dispara animación
+
+        Debug.Log("[AutoShoot] Disparo automático hacia enemigo");
     }
 }

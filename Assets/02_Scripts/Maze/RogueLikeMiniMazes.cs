@@ -1,6 +1,9 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+// NUEVO (arriba del archivo si usas el fallback local)
+using UnityEngine.SceneManagement;
+
 
 /// <summary>
 /// RogueLikeMiniMazes — Simple & Efficient (con inicio/salida seguros + spawns de enemigos + trampas)
@@ -13,11 +16,23 @@ using System.Collections.Generic;
 /// </summary>
 public class RogueLikeMiniMazes : MonoBehaviour
 {
+        [Header("Cambio de escena al morir el 'exit-enemy'")]
+    [Tooltip("Usar BuildIndex si >= 0, si es -1 se usará NextSceneName")]
+    public int nextSceneBuildIndex = -1;
+    public string nextSceneName = "";
+    [Tooltip("Retardo antes de cambiar de escena tras morir (seg)")]
+    public float exitLoadDelay = 0.6f;
+    [Tooltip("Si usas Fusion y quieres que el cambio sea sincronizado")]
+    public bool useFusionSceneLoad = false;
+
+
+
     [Header("Prefabs Básicos")]
     public GameObject floorPrefab;
     public GameObject wallPrefab;
 
     [Header("Prefabs de Inicio y Salida")]
+    [Tooltip("Prefab local de jugador (fallback si no hay selección en BD)")]
     public GameObject playerPrefab;
     public GameObject exitPrefab;
 
@@ -51,7 +66,7 @@ public class RogueLikeMiniMazes : MonoBehaviour
     public int roomMaxH = 12;
 
     [Header("Mini-Laberintos en Salas")]
-    [Range(0, 1f)] public float mazeRoomRatio = 0.5f;
+    [Range(0f, 1f)] public float mazeRoomRatio = 0.5f;
     [Min(2)] public int mazeGridStep = 2;
 
     [Header("Random")]
@@ -68,44 +83,54 @@ public class RogueLikeMiniMazes : MonoBehaviour
     public float spawnYOffset = 0.1f;
 
     // ===== Internals =====
-    private bool[,] walk; // true = piso
+    private bool[,] walk;
+    private bool[,] isTrap;
+    private GameObject[,] floorRefs;
     private List<RectInt> rooms = new List<RectInt>();
     private System.Random rng;
-
+    private List<Vector2Int> walkableCache = new List<Vector2Int>();
+    private List<Vector3> enemySpawnWorld = new List<Vector3>();
     private readonly int[] dx = { 0, 1, 0, -1 };
     private readonly int[] dy = { 1, 0, -1, 0 };
-
     private Vector2Int startPos;
     private Vector2Int exitPos;
-
-    // Cache de celdas caminables para spawns
-    private List<Vector2Int> walkableCache = new List<Vector2Int>();
-
-    // Referencia a pisos por celda para poder reemplazar por trampas
-    private GameObject[,] floorRefs;
-
-    // Celdas marcadas como trampa (para fácil consulta)
-    private bool[,] isTrap;
-
-    // Gizmo de debug de spawns enemigos
-    private readonly List<Vector3> enemySpawnWorld = new List<Vector3>();
 
     void Start()
     {
         InitRandom();
         ClampInputs();
         Generate();
-        BuildVisuals();           // crea walls y pisos base
-        PickEndpointsAndSpawn();  // player + portal
-        PlaceTraps();             // reemplaza ciertos pisos por trampas
-        SpawnEnemies();           // enemigos
+        BuildVisuals();
+        PickEndpointsAndSpawn();
+        PlaceTraps();
+        SpawnEnemies();
     }
 
-    #region Setup
+    // ----------------- NUEVO: Spawn usando loader o fallback -----------------
+    void SpawnPlayer(Vector3 spawnPosition)
+    {
+        // Intentar prefab del loader según selección en BD
+        GameObject prefab = PlayerPrefabLoader.GetPlayerPrefab();
+
+        // Fallback al inspector
+        if (prefab == null) prefab = playerPrefab;
+
+        if (prefab != null)
+        {
+            Instantiate(prefab, spawnPosition, Quaternion.identity);
+            Debug.Log($"[Spawner] Personaje instanciado: {prefab.name}");
+        }
+        else
+        {
+            Debug.LogError("[Spawner] No se pudo instanciar el personaje porque no hay prefab asignado.");
+        }
+    }
+    // -------------------------------------------------------------------------
+
     void InitRandom()
     {
-        // Mantén false para que siempre sea aleatorio en cada Play.
-        rng = useFixedSeed ? new System.Random(seed)
+        rng = useFixedSeed
+            ? new System.Random(seed)
             : new System.Random(UnityEngine.Random.Range(int.MinValue, int.MaxValue));
     }
 
@@ -113,8 +138,8 @@ public class RogueLikeMiniMazes : MonoBehaviour
     {
         width = Mathf.Max(width, 10);
         height = Mathf.Max(height, 10);
-        roomMinW = Mathf.Clamp(roomMinW, 3, Mathf.Max(3, roomMaxW));
-        roomMinH = Mathf.Clamp(roomMinH, 3, Mathf.Max(3, roomMaxH));
+        roomMinW = Mathf.Clamp(roomMinW, 3, roomMaxW);
+        roomMinH = Mathf.Clamp(roomMinH, 3, roomMaxH);
         roomMaxW = Mathf.Max(roomMaxW, roomMinW);
         roomMaxH = Mathf.Max(roomMaxH, roomMinH);
         mazeGridStep = Mathf.Max(2, mazeGridStep);
@@ -123,16 +148,13 @@ public class RogueLikeMiniMazes : MonoBehaviour
         trapSafeRadius = Mathf.Max(0, trapSafeRadius);
         trapProbability = Mathf.Clamp01(trapProbability);
     }
-    #endregion
 
-    #region Generación
     void Generate()
     {
         walk = new bool[width, height];
         isTrap = new bool[width, height];
         floorRefs = new GameObject[width, height];
         rooms.Clear();
-
         PlaceRooms();
         ConnectRooms();
         CarveMiniMazesInRooms();
@@ -145,17 +167,14 @@ public class RogueLikeMiniMazes : MonoBehaviour
         {
             int w = rng.Next(roomMinW, roomMaxW + 1);
             int h = rng.Next(roomMinH, roomMaxH + 1);
-            int x = rng.Next(1, Mathf.Max(2, width - w - 1));
-            int y = rng.Next(1, Mathf.Max(2, height - h - 1));
+            int x = rng.Next(1, width - w - 1);
+            int y = rng.Next(1, height - h - 1);
             var r = new RectInt(x, y, w, h);
-
             if (IntersectsAny(r, rooms, 1)) continue;
-
             rooms.Add(r);
             CarveRect(r);
             placed++;
         }
-
         if (rooms.Count == 0)
         {
             var fallback = new RectInt(width / 2 - 5, height / 2 - 4, 10, 8);
@@ -180,49 +199,35 @@ public class RogueLikeMiniMazes : MonoBehaviour
         foreach (var r in rooms)
         {
             if (rng.NextDouble() > mazeRoomRatio) continue;
-
-            var inner = new RectInt(r.xMin + 1, r.yMin + 1, Mathf.Max(1, r.width - 2), Mathf.Max(1, r.height - 2));
+            var inner = new RectInt(r.xMin + 1, r.yMin + 1, r.width - 2, r.height - 2);
             if (inner.width < 3 || inner.height < 3) continue;
-
-            // Reinicia interior a MURO
             FillRect(inner, false);
-
-            // Celdas discretas para el DFS interno
-            List<Vector2Int> cells = new List<Vector2Int>();
+            var cells = new List<Vector2Int>();
             for (int y = inner.yMin; y < inner.yMax; y += mazeGridStep)
                 for (int x = inner.xMin; x < inner.xMax; x += mazeGridStep)
                     cells.Add(new Vector2Int(x, y));
             if (cells.Count == 0) continue;
-
-            HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-            Vector2Int start = cells[rng.Next(cells.Count)];
-            DFS_MiniMaze(start, inner, visited);
-
-            // Mantén el marco de la sala caminable para no romper pasillos
+            var visited = new HashSet<Vector2Int>();
+            DFS_MiniMaze(cells[rng.Next(cells.Count)], inner, visited);
             CarveRectBorder(r);
         }
     }
 
-    void DFS_MiniMaze(Vector2Int c, RectInt inner, HashSet<Vector2Int> visited)
+    void DFS_MiniMaze(Vector2Int c, RectInt inner, HashSet<Vector2Int> v)
     {
-        visited.Add(c);
+        v.Add(c);
         MakeWalk(c);
-
-        List<int> dirs = new List<int> { 0, 1, 2, 3 };
+        var dirs = new List<int> { 0, 1, 2, 3 };
         Shuffle(dirs);
-
         foreach (int d in dirs)
         {
-            Vector2Int n = new Vector2Int(c.x + dx[d] * mazeGridStep, c.y + dy[d] * mazeGridStep);
-            if (!inner.Contains(n) || visited.Contains(n)) continue;
-
+            var n = new Vector2Int(c.x + dx[d] * mazeGridStep, c.y + dy[d] * mazeGridStep);
+            if (!inner.Contains(n) || v.Contains(n)) continue;
             CarveLine(c, n);
-            DFS_MiniMaze(n, inner, visited);
+            DFS_MiniMaze(n, inner, v);
         }
     }
-    #endregion
 
-    #region Construcción Visual
     void BuildVisuals()
     {
         if (floorPrefab == null || wallPrefab == null)
@@ -232,8 +237,6 @@ public class RogueLikeMiniMazes : MonoBehaviour
         }
 
         float half = cellSize * 0.5f;
-
-        // Pisos (guardamos referencia por celda para poder reemplazar por trampas)
         ForEachCell((x, y) =>
         {
             if (!walk[x, y]) return;
@@ -241,149 +244,112 @@ public class RogueLikeMiniMazes : MonoBehaviour
             floorRefs[x, y] = f;
         });
 
-        // Muros (contorno de celdas caminables)
         ForEachCell((x, y) =>
         {
             if (!walk[x, y]) return;
-            Vector3 basePos = GridToWorld(x, y);
-
+            var bp = GridToWorld(x, y);
             if (!IsWalk(x, y + 1))
-                Instantiate(wallPrefab, basePos + new Vector3(0, 0, half), Quaternion.identity, transform);
+                Instantiate(wallPrefab, bp + Vector3.forward * half, Quaternion.identity, transform);
             if (!IsWalk(x + 1, y))
-                Instantiate(wallPrefab, basePos + new Vector3(half, 0, 0), Quaternion.Euler(0, 90, 0), transform);
+                Instantiate(wallPrefab, bp + Vector3.right * half, Quaternion.Euler(0, 90, 0), transform);
             if (!IsWalk(x, y - 1))
-                Instantiate(wallPrefab, basePos + new Vector3(0, 0, -half), Quaternion.identity, transform);
+                Instantiate(wallPrefab, bp + Vector3.back * half, Quaternion.identity, transform);
             if (!IsWalk(x - 1, y))
-                Instantiate(wallPrefab, basePos + new Vector3(-half, 0, 0), Quaternion.Euler(0, 90, 0), transform);
+                Instantiate(wallPrefab, bp + Vector3.left * half, Quaternion.Euler(0, 90, 0), transform);
         });
     }
-    #endregion
 
-    #region Extremos + Trampas + Enemigos
     void PickEndpointsAndSpawn()
     {
-        // Cachear celdas caminables
         walkableCache.Clear();
         ForEachCell((x, y) => { if (walk[x, y]) walkableCache.Add(new Vector2Int(x, y)); });
-
         if (walkableCache.Count < 2)
         {
-            Debug.LogWarning("No hay suficientes celdas caminables para ubicar inicio/salida.");
+            Debug.LogWarning("No hay suficientes celdas caminables para inicio/salida.");
             return;
         }
-
-        // Heurística de diámetro:
         Vector2Int A = walkableCache[rng.Next(walkableCache.Count)];
         Vector2Int B = FarthestFrom(A, out _);
         Vector2Int C = FarthestFrom(B, out _);
-
-        // Usamos B como inicio y C como salida (extremos opuestos)
         startPos = PushInwardIfEdge(B);
         exitPos = PushInwardIfEdge(C);
 
-        // Instanciar en posiciones "snap al piso"
-        if (playerPrefab)
-        {
-            Vector3 wp = SnapToGround(GridToWorld(startPos.x, startPos.y));
-            Instantiate(playerPrefab, wp, Quaternion.identity);
-        }
+        // spawn
+        var wp = SnapToGround(GridToWorld(startPos.x, startPos.y));
+        SpawnPlayer(wp);
 
         if (exitPrefab)
         {
-            Vector3 we = SnapToGround(GridToWorld(exitPos.x, exitPos.y));
-            Instantiate(exitPrefab, we, Quaternion.identity);
+            var we = SnapToGround(GridToWorld(exitPos.x, exitPos.y));
+            var exitGO = Instantiate(exitPrefab, we, Quaternion.identity);
+
+            // Asegurar ExitOnDeath y configurarlo
+            var eod = exitGO.GetComponent<ExitOnDeath>();
+            if (eod == null) eod = exitGO.AddComponent<ExitOnDeath>();
+            eod.nextSceneBuildIndex = nextSceneBuildIndex;
+            eod.nextSceneName = nextSceneName;
+            eod.loadDelay = exitLoadDelay;
+            eod.useFusionSceneLoad = useFusionSceneLoad;
         }
+
 
         Debug.Log($"START: {startPos}  EXIT: {exitPos}");
     }
-
-    // Marca y coloca trampas reemplazando ciertos pisos por trapFloorPrefab
+    
     void PlaceTraps()
     {
         if (!trapFloorPrefab || trapProbability <= 0f) return;
-
         foreach (var cell in walkableCache)
         {
-            // Evitar trampa en inicio/salida y un pequeño radio seguro
             if (GridDistance(cell, startPos) <= trapSafeRadius) continue;
             if (GridDistance(cell, exitPos) <= trapSafeRadius) continue;
+            if (UnityEngine.Random.value > trapProbability) continue;
 
-            if (UnityEngine.Random.value <= trapProbability)
-            {
-                int x = cell.x, y = cell.y;
-                if (!IsWalk(x, y)) continue;
+            int x = cell.x, y = cell.y;
+            if (!walk[x, y]) continue;
+            var prev = floorRefs[x, y];
+            var pos = GridToWorld(x, y);
+            var rot = prev ? prev.transform.rotation : Quaternion.identity;
+            var parent = prev ? prev.transform.parent : transform;
+            if (prev) Destroy(prev);
 
-                // Reemplaza el piso por el prefab de trampa
-                var prev = floorRefs[x, y];
-                Vector3 pos = GridToWorld(x, y);
-                Quaternion rot = prev ? prev.transform.rotation : Quaternion.identity;
-                Transform parent = prev ? prev.transform.parent : transform;
+            var trap = Instantiate(trapFloorPrefab, pos, rot, parent);
+            if (!trap.TryGetComponent<TrapTile>(out var tile))
+                tile = trap.AddComponent<TrapTile>();
+            tile.consumeOnTrigger = true;
+            tile.knockUpForce = 4f;
+            tile.debugLog = false;
 
-                if (prev) Destroy(prev);
-
-                var trap = Instantiate(trapFloorPrefab, pos, rot, parent);
-
-                // Asegura tener un TrapTile (si el prefab no lo tiene, lo añadimos)
-                if (!trap.TryGetComponent<TrapTile>(out var tile))
-                {
-                    tile = trap.AddComponent<TrapTile>();
-                }
-                // Config mínimo opcional del componente (puedes ajustar en el prefab también)
-                tile.consumeOnTrigger = true;      // se desactiva al activarse
-                tile.knockUpForce = 4f;            // efecto por defecto si hay Rigidbody
-                tile.debugLog = false;
-
-                isTrap[x, y] = true;
-                floorRefs[x, y] = trap; // ahora el piso de esa celda es la trampa
-            }
+            isTrap[x, y] = true;
+            floorRefs[x, y] = trap;
         }
     }
 
-    // Spawns de enemigos simples y seguros (dentro del mapa)
     void SpawnEnemies()
     {
         enemySpawnWorld.Clear();
-
-        if (enemyPrefabs == null || enemyPrefabs.Length == 0 || totalEnemies <= 0)
-            return;
-
-        if (walkableCache == null || walkableCache.Count == 0)
-        {
-            walkableCache = new List<Vector2Int>();
-            ForEachCell((x, y) => { if (walk[x, y]) walkableCache.Add(new Vector2Int(x, y)); });
-            if (walkableCache.Count == 0) return;
-        }
-
+        if (enemyPrefabs == null || enemyPrefabs.Length == 0 || totalEnemies <= 0) return;
         float maxJ = Mathf.Clamp(enemySpawnJitter, 0f, cellSize * 0.45f);
-
-        int spawned = 0;
-        int attempts = 0;
-        int maxAttempts = Mathf.Max(200, totalEnemies * 40); // salvaguarda
-
-        while (spawned < totalEnemies && attempts < maxAttempts)
+        int spawned = 0, attempts = 0, maxA = Mathf.Max(200, totalEnemies * 40);
+        while (spawned < totalEnemies && attempts < maxA)
         {
             attempts++;
-
-            Vector2Int c = walkableCache[rng.Next(walkableCache.Count)];
+            var c = walkableCache[rng.Next(walkableCache.Count)];
             if (c == startPos || c == exitPos) continue;
+            var p = GridToWorld(c.x, c.y);
+            float jx = (float)(rng.NextDouble() * 2 - 1) * maxJ;
+            float jz = (float)(rng.NextDouble() * 2 - 1) * maxJ;
+            var world = SnapToGround(new Vector3(p.x + jx, p.y, p.z + jz));
 
-            Vector3 p = GridToWorld(c.x, c.y);
-            float jx = (float)(rng.NextDouble() * 2.0 - 1.0) * maxJ;
-            float jz = (float)(rng.NextDouble() * 2.0 - 1.0) * maxJ;
-            Vector3 world = SnapToGround(new Vector3(p.x + jx, p.y, p.z + jz));
-
-            GameObject prefab = enemyPrefabs[rng.Next(enemyPrefabs.Length)];
+            var prefab = enemyPrefabs[rng.Next(enemyPrefabs.Length)];
             if (prefab == null) continue;
-
             Instantiate(prefab, world, Quaternion.identity);
             enemySpawnWorld.Add(world);
             spawned++;
         }
-
         if (spawned < totalEnemies)
-            Debug.Log($"SpawnEnemies(): {spawned}/{totalEnemies}. Sube maxRooms o baja restricciones.");
+            Debug.Log($"SpawnEnemies(): {spawned}/{totalEnemies}");
     }
-    #endregion
 
     #region BFS / Vecinos / Ajustes
     Vector2Int FarthestFrom(Vector2Int src, out Dictionary<Vector2Int, int> distOut)

@@ -24,12 +24,8 @@ public class EnemyBailerina : EnemyBase
     {
         animator = GetComponent<Animator>();
 
-        // 🔹 Stats especiales de este enemigo
-        maxHealth = Mathf.Max(maxHealth, 220f);
-        currentHealth = maxHealth;
-        damageReduction = Mathf.Max(damageReduction, 0.4f);
-
-        moveSpeed = Mathf.Min(moveSpeed, 2.6f);
+        // 👇 Ya no se toca vida, defensa ni velocidad.
+        // Esos valores vienen directo de EnemyBase (Inspector).
     }
 
     protected override void Update()
@@ -88,10 +84,9 @@ public class EnemyBailerina : EnemyBase
         Ray ray = new Ray(spawnPos + Vector3.up * 5f, Vector3.down);
         if (Physics.Raycast(ray, out RaycastHit hit, 10f))
         {
-            spawnPos.y = hit.point.y + 0.1f; // un pelín sobre el piso
+            spawnPos.y = hit.point.y + 0.1f;
         }
 
         Instantiate(clonePrefab, spawnPos, transform.rotation);
     }
-
 }

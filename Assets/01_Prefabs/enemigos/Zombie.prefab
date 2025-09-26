@@ -1115,8 +1115,8 @@ MonoBehaviour:
   player: {fileID: 0}
   moveSpeed: 1
   detectionRange: 15
-  stopDistance: 0.5
-  maxHealth: 100
+  stopDistance: 1
+  maxHealth: 30
   currentHealth: 0
   damageReduction: 0
   coinPrefab: {fileID: 4838129900807655917, guid: d09577b28190e1343aa13ff8c7b033f4, type: 3}
