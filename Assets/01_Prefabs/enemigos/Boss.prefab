@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 5844843828558516217}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.0101, z: 0.0189}
+  m_LocalPosition: {x: 0, y: 0.0028, z: 0.0189}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -41,15 +41,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 60
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 60
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 60
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 67955cb5f19a00e44a7f119a8f8d53f4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -264,3 +264,4 @@ MonoBehaviour:
   chargeForce: 20
   chargeDuration: 1.5
   chargeCooldown: 8
+  goalPrefab: {fileID: 7691538546112179865, guid: 180470023ac9b3e448b0b04ccfa72fa9, type: 3}

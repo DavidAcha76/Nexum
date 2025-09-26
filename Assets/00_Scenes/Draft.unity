@@ -3526,11 +3526,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1847965756499979961, guid: cae6fed155913bb4cb077061320c94a7, type: 3}
       propertyPath: width
-      value: 30
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 1847965756499979961, guid: cae6fed155913bb4cb077061320c94a7, type: 3}
       propertyPath: height
-      value: 20
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 1847965756499979961, guid: cae6fed155913bb4cb077061320c94a7, type: 3}
       propertyPath: cellSize
@@ -3562,7 +3562,11 @@ PrefabInstance:
       objectReference: {fileID: 6444669494718020707, guid: ab33434c4eeb9c14da54c0e14d46f607, type: 3}
     - target: {fileID: 1847965756499979961, guid: cae6fed155913bb4cb077061320c94a7, type: 3}
       propertyPath: totalEnemies
-      value: 15
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1847965756499979961, guid: cae6fed155913bb4cb077061320c94a7, type: 3}
+      propertyPath: nextSceneName
+      value: EventAR
       objectReference: {fileID: 0}
     - target: {fileID: 1847965756499979961, guid: cae6fed155913bb4cb077061320c94a7, type: 3}
       propertyPath: enemyPrefabs.Array.size
